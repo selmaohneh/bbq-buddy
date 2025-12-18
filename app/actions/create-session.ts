@@ -50,6 +50,18 @@ export async function createSession(prevState: any, formData: FormData) {
       }
     }
 
+    // 3.5 Ensure Profile Exists (Self-healing)
+    // If the user profile is missing (e.g. old user), creating a session will fail.
+    // We try to upsert the profile to ensure it exists.
+    const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({ id: user.id }, { onConflict: 'id', ignoreDuplicates: true })
+    
+    if (profileError) {
+        console.warn('Could not verify profile existence:', profileError)
+        // We continue anyway, hoping for the best, or the insert below will fail specificially.
+    }
+
     // 4. Insert Session
     const { error: insertError } = await supabase
       .from('sessions')
@@ -62,6 +74,22 @@ export async function createSession(prevState: any, formData: FormData) {
 
     if (insertError) {
       console.error('Insert error details:', JSON.stringify(insertError, null, 2))
+      
+      // Cleanup: Delete uploaded images since session creation failed
+      if (imageUrls.length > 0) {
+        const pathsToRemove = imageUrls.map(url => {
+            try {
+                const urlObj = new URL(url)
+                const parts = urlObj.pathname.split('/session-images/')
+                return parts.length > 1 ? parts[1] : null
+            } catch (e) { return null }
+        }).filter(Boolean) as string[]
+
+        if (pathsToRemove.length > 0) {
+            await supabase.storage.from('session-images').remove(pathsToRemove)
+        }
+      }
+
       return { message: 'Failed to save session. Please try again.' }
     }
   } catch (err) {
