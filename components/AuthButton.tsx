@@ -2,31 +2,47 @@
 
 import { useSupabase } from '@/app/supabase-provider'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import Avatar from './Avatar'
+import { useEffect, useState } from 'react'
 
 export default function AuthButton() {
   const { session, supabase } = useSupabase()
-  const router = useRouter()
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.refresh()
-    router.push('/login')
-  }
+  useEffect(() => {
+    let ignore = false
+    async function getProfile() {
+      if (!session?.user) return
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', session.user.id)
+        .single()
+        
+      if (!ignore && data) {
+        setAvatarUrl(data.avatar_url)
+      }
+    }
+    
+    if (session) {
+        getProfile()
+    } else {
+        setAvatarUrl(null)
+    }
+
+    return () => {
+        ignore = true
+    }
+  }, [session, supabase])
 
   if (session) {
     return (
-      <div className="flex items-center gap-2">
-        <span className="text-sm hidden sm:inline-block text-white/90">
-          {session.user.email}
-        </span>
-        <button
-          onClick={handleLogout}
-          className="text-sm bg-white/10 hover:bg-white/20 text-white py-2 px-4 rounded-md transition-colors cursor-pointer"
-        >
-          Logout
-        </button>
-      </div>
+      <Link href="/profile" className="flex items-center gap-2">
+        <div className="cursor-pointer hover:opacity-80 transition-opacity">
+           <Avatar uid={session.user.id} url={avatarUrl} size={36} />
+        </div>
+      </Link>
     )
   }
 
