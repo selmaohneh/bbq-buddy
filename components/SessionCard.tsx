@@ -20,7 +20,10 @@ export function SessionCard({ session }: SessionCardProps) {
   })
 
   return (
-    <div className="group relative flex flex-col sm:flex-row bg-white dark:bg-zinc-900 border border-foreground/10 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+    <Link 
+        href={`/sessions/${session.id}/edit`}
+        className="group relative flex flex-col sm:flex-row bg-white dark:bg-zinc-900 border border-foreground/10 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden block"
+    >
         {/* Link covers the whole card for better UX */}
         {/* We can add a detailed view later, for now it's just a visual list item */}
         
@@ -70,6 +73,6 @@ export function SessionCard({ session }: SessionCardProps) {
            {/* Tags will go here */}
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
