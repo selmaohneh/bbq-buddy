@@ -1,25 +1,27 @@
-import { createClient } from '@/utils/supabase/server'
+'use client'
+
+import { useSupabase } from './supabase-provider'
 import Link from 'next/link'
 
-export default async function Index() {
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+export default function Page() {
+  const { session, supabase } = useSupabase()
 
   return (
     <div className="flex-1 w-full flex flex-col gap-20 items-center">
       <nav className="w-full h-16 border-b border-b-foreground/10 flex justify-center">
         <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
-          {user ? (
+          {session ? (
             <div className="flex items-center gap-4">
-              Hey, {user.email}!
-              <form action="/auth/signout" method="post">
-                <button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
-                  Logout
-                </button>
-              </form>
+              Hey, {session.user.email}!
+              <button
+                className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
+                onClick={async () => {
+                  await supabase.auth.signOut()
+                  window.location.href = '/login'
+                }}
+              >
+                Logout
+              </button>
             </div>
           ) : (
             <Link
