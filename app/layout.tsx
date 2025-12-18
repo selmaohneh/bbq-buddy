@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
@@ -18,6 +18,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "BBQ Buddy",
   description: "Never Forget a BBQ",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "BBQ Buddy",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#D64933",
 };
 
 export default function RootLayout({
