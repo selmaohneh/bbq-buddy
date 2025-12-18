@@ -3,6 +3,7 @@
 import { useSupabase } from './supabase-provider'
 import Link from 'next/link'
 import Image from 'next/image'
+import FloatingActionButton from '@/components/FloatingActionButton'
 
 export default function Page() {
   const { session } = useSupabase()
@@ -45,7 +46,11 @@ export default function Page() {
           </div>
         ) : (
           <div className="mt-8 space-y-6 w-full">
-            
+             <div className="p-4 rounded-lg bg-foreground/5 border border-foreground/10 text-left">
+                <p className="text-lg font-semibold">Welcome back!</p>
+                <p className="text-foreground/60">No sessions recorded yet. Start your streak!</p>
+             </div>
+             <FloatingActionButton />
           </div>
         )}
       </div>
