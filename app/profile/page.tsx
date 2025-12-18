@@ -90,31 +90,41 @@ export default function Profile() {
             url={avatar_url}
             size={150}
             onUpload={async (newPath, oldPath) => {
+                console.log('[Profile onUpload] Called with newPath:', newPath, 'oldPath:', oldPath)
+
                 // Optimistically update local state
                 setAvatarUrl(newPath)
 
                 // Update the profile with the new avatar path
                 const success = await updateProfile({ username, avatar_url: newPath })
+                console.log('[Profile onUpload] updateProfile success:', success)
 
                 if (success) {
                     // Cleanup old avatar if it existed and is different from new path
+                    console.log('[Profile onUpload] Checking cleanup conditions - oldPath:', oldPath, 'oldPath !== newPath:', oldPath !== newPath)
                     if (oldPath && oldPath !== newPath) {
+                        console.log('[Profile onUpload] Calling deleteAvatar with oldPath:', oldPath)
                         const result = await deleteAvatar(oldPath)
+                        console.log('[Profile onUpload] deleteAvatar result:', result)
                         if (!result.success) {
                             // Log but don't show error to user - cleanup is best-effort
-                            console.error('Failed to cleanup old avatar:', result.error)
+                            console.error('[Profile onUpload] Failed to cleanup old avatar:', result.error)
                         }
+                    } else {
+                        console.log('[Profile onUpload] Skipping cleanup - oldPath is falsy or same as newPath')
                     }
                 } else {
+                    console.log('[Profile onUpload] Profile update failed, reverting state')
                     // Revert local state if update failed
                     setAvatarUrl(oldPath)
 
                     // If we uploaded a new file but profile update failed,
                     // clean up the newly uploaded file to prevent orphans
                     if (newPath && newPath !== oldPath) {
+                        console.log('[Profile onUpload] Cleaning up orphaned new avatar:', newPath)
                         const result = await deleteAvatar(newPath)
                         if (!result.success) {
-                            console.error('Failed to cleanup orphaned new avatar:', result.error)
+                            console.error('[Profile onUpload] Failed to cleanup orphaned new avatar:', result.error)
                         }
                     }
                 }

@@ -109,3 +109,25 @@ drop function if exists public.prevent_username_change();
 alter table public.profiles
 add column if not exists updated_at timestamp with time zone;
 
+
+-- 12. STORAGE POLICIES: Add DELETE policies for session-images
+-- Users can delete their own session images (files in their user_id folder)
+drop policy if exists "Users can delete their own session images" on storage.objects;
+create policy "Users can delete their own session images"
+  on storage.objects for delete
+  using (
+    bucket_id = 'session-images'
+    and auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+
+-- 13. STORAGE POLICIES: Add DELETE policy for avatars
+-- Users can delete their own avatars (files that start with their user_id)
+drop policy if exists "Users can delete their own avatar" on storage.objects;
+create policy "Users can delete their own avatar"
+  on storage.objects for delete
+  using (
+    bucket_id = 'avatars'
+    and auth.uid()::text = split_part(name, '-', 1)
+  );
+
