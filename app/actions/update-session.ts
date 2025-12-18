@@ -25,6 +25,33 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
     return { message: 'Title and Date are required' }
   }
 
+  // 1.5 Fetch current session to determine which images to delete
+  const { data: currentSession } = await supabase
+    .from('sessions')
+    .select('images')
+    .eq('id', id)
+    .single()
+
+  const oldImages = (currentSession?.images as string[]) || []
+  const imagesToDelete = oldImages.filter(img => !keptImages.includes(img))
+
+  if (imagesToDelete.length > 0) {
+    const pathsToRemove = imagesToDelete.map(url => {
+        try {
+            const urlObj = new URL(url)
+            const parts = urlObj.pathname.split('/session-images/')
+            // Decode URI component to handle spaces or special chars in filenames
+            return parts.length > 1 ? decodeURIComponent(parts[1]) : null
+        } catch (e) {
+            return null
+        }
+    }).filter(Boolean) as string[]
+
+    if (pathsToRemove.length > 0) {
+        await supabase.storage.from('session-images').remove(pathsToRemove)
+    }
+  }
+
   let updatedImageUrls = [...keptImages]
 
   try {

@@ -24,7 +24,7 @@ export async function deleteSession(id: string, imageUrls: string[]) {
         try {
             const urlObj = new URL(url)
             const parts = urlObj.pathname.split('/session-images/')
-            return parts.length > 1 ? parts[1] : null
+            return parts.length > 1 ? decodeURIComponent(parts[1]) : null
         } catch (e) {
             return null
         }
