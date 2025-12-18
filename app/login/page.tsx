@@ -59,7 +59,7 @@ export default function LoginPage() {
         className="rounded-md px-4 py-2 bg-inherit border mb-6"
         type="password"
         name="password"
-        onChange={(e) => setPassword(e.targe.value)}
+        onChange={(e) => setPassword(e.target.value)}
         value={password}
         placeholder="••••••••"
       />
