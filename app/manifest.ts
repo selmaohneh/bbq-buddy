@@ -2,12 +2,12 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    id: "/",
     name: "BBQ Buddy",
     short_name: "BBQ Buddy",
     description: "Never Forget a BBQ",
     start_url: "/",
     display: "standalone",
+    orientation: "portrait",
     background_color: "#eee5e9",
     theme_color: "#D64933",
     icons: [
@@ -15,13 +15,19 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/icon-192.png",
         sizes: "192x192",
         type: "image/png",
-        purpose: "any maskable",
+        purpose: "any",
       },
       {
         src: "/icon-512.png",
         sizes: "512x512",
         type: "image/png",
-        purpose: "any maskable",
+        purpose: "any",
+      },
+      {
+        src: "/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
       },
     ],
   };
