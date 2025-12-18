@@ -6,7 +6,7 @@ import ThemeToggle from './ThemeToggle';
 export default function Navbar() {
   return (
     <nav className="bg-primary text-white p-4 shadow-md sticky top-0 z-50">
-      <div className="container mx-auto flex items-center justify-between">
+      <div className="w-full flex items-center justify-between">
         <Link href="/" className="flex items-center gap-0">
           <div className="relative w-10 h-10 rounded-full overflow-hidden">
              <Image
@@ -19,7 +19,7 @@ export default function Navbar() {
           </div>
           <span className="text-xl font-bold tracking-tight">BBQ Buddy</span>
         </Link>
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <AuthButton />
           <ThemeToggle />
         </div>

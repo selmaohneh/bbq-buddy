@@ -1,16 +1,16 @@
 'use client';
 
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 export default function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  // useEffect only runs on the client, so now we can safely show the UI
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   if (!mounted) {
     // Render a placeholder with the same dimensions to avoid layout shift,
@@ -18,7 +18,7 @@ export default function ThemeToggle() {
     // Given it's in a navbar, a blank space of the same size is better than null (if it shifts other elements),
     // but here it is an icon button. Let's return a non-functional placeholder button to keep layout stable.
     return (
-       <div className="w-10 h-10 ml-4" /> 
+       <div className="w-10 h-10" /> 
     );
   }
 
@@ -32,7 +32,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-full hover:bg-white/20 transition-colors ml-4 text-white"
+      className="p-2 rounded-full hover:bg-white/20 transition-colors text-white"
       aria-label="Toggle Dark Mode"
     >
       {isDark ? (
