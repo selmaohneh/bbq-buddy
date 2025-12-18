@@ -14,7 +14,7 @@ export default function Avatar({
   uid: string
   url: string | null
   size: number
-  onUpload?: (path: string | null) => void
+  onUpload?: (path: string | null, oldPath: string | null) => void
 }) {
   const { supabase } = useSupabase()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
@@ -29,8 +29,8 @@ export default function Avatar({
         if (error) {
           throw error
         }
-        const url = URL.createObjectURL(data)
-        setAvatarUrl(url)
+        const objectUrl = URL.createObjectURL(data)
+        setAvatarUrl(objectUrl)
       } catch (error) {
         console.log('Error downloading image: ', error)
       }
@@ -64,8 +64,12 @@ export default function Avatar({
         throw uploadError
       }
 
+      // Pass both the new path and the old path to the callback
+      // The parent component is responsible for:
+      // 1. Updating the profile with the new path
+      // 2. Cleaning up the old file after successful update
       if (onUpload) {
-        onUpload(filePath)
+        onUpload(filePath, url)
       }
     } catch (error) {
       toast.error('Error uploading avatar!')
@@ -76,9 +80,11 @@ export default function Avatar({
   }
 
   const handleDelete = () => {
-    if (onUpload) {
-        onUpload(null)
-    }
+    if (!onUpload || !url) return
+
+    // Notify parent that avatar is being removed
+    // Parent should update the profile first, then cleanup will happen
+    onUpload(null, url)
   }
 
   return (

@@ -1,15 +1,16 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSupabase } from '@/app/supabase-provider'
 import Avatar from '@/components/Avatar'
 import { useRouter } from 'next/navigation'
 import { useProfile } from '@/components/ProfileProvider'
 import { toast } from 'sonner'
+import { deleteAvatar } from '@/app/actions/delete-avatar'
 
 export default function Profile() {
   const { supabase, session } = useSupabase()
-  const { profile, refreshProfile, setProfile: setGlobalProfile } = useProfile()
+  const { profile, refreshProfile } = useProfile()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [username, setUsername] = useState<string | null>(null)
@@ -29,7 +30,7 @@ export default function Profile() {
   }: {
     username: string | null
     avatar_url: string | null
-  }) {
+  }): Promise<boolean> {
     try {
       setLoading(true)
       if (!session?.user) throw new Error('No user')
@@ -48,13 +49,16 @@ export default function Profile() {
         }
         throw error
       }
-      
+
       // Update global context
       await refreshProfile()
       toast.success('Profile updated!')
-    } catch (error: any) {
-      toast.error(error.message || 'Error updating the data!')
+      return true
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error updating the data!'
+      toast.error(message)
       console.log(error)
+      return false
     } finally {
       setLoading(false)
     }
@@ -85,26 +89,34 @@ export default function Profile() {
             uid={session.user.id}
             url={avatar_url}
             size={150}
-            onUpload={async (newPath) => {
-                const oldPath = avatar_url
+            onUpload={async (newPath, oldPath) => {
+                // Optimistically update local state
                 setAvatarUrl(newPath)
-                
-                try {
-                    await updateProfile({ username, avatar_url: newPath })
-                    
+
+                // Update the profile with the new avatar path
+                const success = await updateProfile({ username, avatar_url: newPath })
+
+                if (success) {
                     // Cleanup old avatar if it existed and is different from new path
                     if (oldPath && oldPath !== newPath) {
-                        const { error } = await supabase.storage.from('avatars').remove([oldPath])
-                        if (error) {
-                            console.error('Error removing old avatar:', error)
-                        } else {
-                            console.log('Old avatar removed successfully')
+                        const result = await deleteAvatar(oldPath)
+                        if (!result.success) {
+                            // Log but don't show error to user - cleanup is best-effort
+                            console.error('Failed to cleanup old avatar:', result.error)
                         }
                     }
-                } catch (error) {
+                } else {
                     // Revert local state if update failed
                     setAvatarUrl(oldPath)
-                    console.error('Failed to update profile, reverted avatar.')
+
+                    // If we uploaded a new file but profile update failed,
+                    // clean up the newly uploaded file to prevent orphans
+                    if (newPath && newPath !== oldPath) {
+                        const result = await deleteAvatar(newPath)
+                        if (!result.success) {
+                            console.error('Failed to cleanup orphaned new avatar:', result.error)
+                        }
+                    }
                 }
             }}
             />
