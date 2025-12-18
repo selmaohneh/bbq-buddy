@@ -9,7 +9,7 @@ export default function Navbar() {
         <Link href="/" className="flex items-center gap-3">
           <div className="relative w-10 h-10 rounded-full overflow-hidden">
              <Image
-              src="/logo.png"
+              src="/logo-flame.png"
               alt="BBQ Buddy Icon"
               fill
               className="object-cover"
