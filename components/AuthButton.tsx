@@ -16,7 +16,7 @@ export default function AuthButton() {
 
   if (session) {
     return (
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <span className="text-sm hidden sm:inline-block text-white/90">
           {session.user.email}
         </span>
