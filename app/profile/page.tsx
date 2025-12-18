@@ -103,7 +103,7 @@ export default function Profile() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-[var(--background)] text-[var(--foreground)]">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white dark:bg-gray-800 rounded shadow-md border border-gray-200 dark:border-gray-700">
+      <div className="w-full max-w-md p-8 space-y-8 bg-card text-card-foreground rounded shadow-md border border-border">
         <h1 className="text-2xl font-bold text-center">Profile</h1>
         
         <div className="flex justify-center">
@@ -125,7 +125,7 @@ export default function Profile() {
             type="text" 
             value={session.user.email} 
             disabled 
-            className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400" 
+            className="w-full p-2 border border-border rounded bg-input opacity-70 cursor-not-allowed" 
           />
         </div>
         <div>
@@ -135,7 +135,7 @@ export default function Profile() {
             type="text"
             value={username || ''}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2 border rounded bg-white dark:bg-gray-900 text-[var(--foreground)]"
+            className="w-full p-2 border border-border rounded bg-card text-card-foreground"
           />
         </div>
 

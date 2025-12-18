@@ -29,7 +29,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2 mt-10">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+      <div className="bg-card text-card-foreground p-6 rounded-lg shadow-md border border-border">
         <h1 className="text-2xl font-bold text-center mb-6 text-[var(--primary)]">Login</h1>
         <Auth
           supabaseClient={supabase}
@@ -40,6 +40,10 @@ export default function LoginPage() {
                 colors: {
                   brand: '#D64933',
                   brandAccent: '#A8321F',
+                  inputBackground: 'var(--input-background)',
+                  inputText: 'var(--foreground)',
+                  inputBorder: 'var(--border)',
+                  inputLabelText: 'var(--foreground)',
                 },
               },
             },
