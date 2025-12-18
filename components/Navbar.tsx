@@ -7,7 +7,7 @@ export default function Navbar() {
     <nav className="bg-primary text-white p-4 shadow-md sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white">
+          <div className="relative w-10 h-10 rounded-full overflow-hidden">
              <Image
               src="/logo.png"
               alt="BBQ Buddy Icon"
