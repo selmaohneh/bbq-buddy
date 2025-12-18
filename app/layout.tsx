@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import "./globals.css";
 import SupabaseProvider from "./supabase-provider";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { ProfileProvider } from "@/components/ProfileProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,17 +48,19 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SupabaseProvider>
-          <ThemeProvider
-            attribute="data-theme"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Navbar />
-            <main className="flex flex-col items-center min-h-screen">
-              {children}
-            </main>
-          </ThemeProvider>
+          <ProfileProvider>
+            <ThemeProvider
+              attribute="data-theme"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Navbar />
+              <main className="flex flex-col items-center min-h-screen">
+                {children}
+              </main>
+            </ThemeProvider>
+          </ProfileProvider>
         </SupabaseProvider>
       </body>
     </html>

@@ -4,53 +4,23 @@ import { useCallback, useEffect, useState } from 'react'
 import { useSupabase } from '@/app/supabase-provider'
 import Avatar from '@/components/Avatar'
 import { useRouter } from 'next/navigation'
+import { useProfile } from '@/components/ProfileProvider'
 
 export default function Profile() {
   const { supabase, session } = useSupabase()
+  const { profile, refreshProfile, setProfile: setGlobalProfile } = useProfile()
   const router = useRouter()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [username, setUsername] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
 
-  const getProfile = useCallback(async () => {
-    try {
-      setLoading(true)
-      if (!session?.user) return // Wait for session
-
-      const { data, error, status } = await supabase
-        .from('profiles')
-        .select(`username, avatar_url`)
-        .eq('id', session.user.id)
-        .single()
-
-      if (error && status !== 406) {
-        throw error
-      }
-
-      if (data) {
-        setUsername(data.username)
-        setAvatarUrl(data.avatar_url)
-      }
-    } catch (error) {
-      console.log('Error loading user data!')
-    } finally {
-      setLoading(false)
-    }
-  }, [session, supabase])
-
+  // Sync local state with global profile when it loads
   useEffect(() => {
-    // Only fetch if session exists
-    if (session) {
-      getProfile()
-    } else {
-        // If no session and finished loading (implied by this component rendering usually, 
-        // but session can be null initially. SupabaseProvider handles it).
-        // We might want to wait a bit or let the provider handle loading state.
-        // For now, if no session, we can redirect.
-        // router.push('/login') 
-        // But let's handle the case where session is loading.
+    if (profile) {
+      setUsername(profile.username)
+      setAvatarUrl(profile.avatar_url)
     }
-  }, [session, getProfile])
+  }, [profile])
 
   async function updateProfile({
     username,
@@ -77,6 +47,9 @@ export default function Profile() {
         }
         throw error
       }
+      
+      // Update global context
+      await refreshProfile()
       alert('Profile updated!')
     } catch (error: any) {
       alert(error.message || 'Error updating the data!')
@@ -111,9 +84,27 @@ export default function Profile() {
             uid={session.user.id}
             url={avatar_url}
             size={150}
-            onUpload={(url) => {
-                setAvatarUrl(url)
-                updateProfile({ username, avatar_url: url })
+            onUpload={async (newPath) => {
+                const oldPath = avatar_url
+                setAvatarUrl(newPath)
+                
+                try {
+                    await updateProfile({ username, avatar_url: newPath })
+                    
+                    // Cleanup old avatar if it existed and is different from new path
+                    if (oldPath && oldPath !== newPath) {
+                        const { error } = await supabase.storage.from('avatars').remove([oldPath])
+                        if (error) {
+                            console.error('Error removing old avatar:', error)
+                        } else {
+                            console.log('Old avatar removed successfully')
+                        }
+                    }
+                } catch (error) {
+                    // Revert local state if update failed
+                    setAvatarUrl(oldPath)
+                    console.error('Failed to update profile, reverted avatar.')
+                }
             }}
             />
         </div>
