@@ -129,9 +129,11 @@ export default function Profile() {
             id="username"
             type="text"
             value={username || ''}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2 border rounded bg-white dark:bg-gray-900 text-[var(--foreground)]"
+            readOnly
+            disabled
+            className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
           />
+          <p className="text-xs text-gray-500 mt-1">Username cannot be changed.</p>
         </div>
 
         <div className="flex flex-col gap-4">
