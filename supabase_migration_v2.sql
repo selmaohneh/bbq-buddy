@@ -34,14 +34,17 @@ values ('avatars', 'avatars', true)
 on conflict (id) do nothing;
 
 -- 6. STORAGE POLICIES for Avatars
+drop policy if exists "Avatar images are publicly accessible." on storage.objects;
 create policy "Avatar images are publicly accessible."
   on storage.objects for select
   using ( bucket_id = 'avatars' );
 
+drop policy if exists "Authenticated users can upload avatars" on storage.objects;
 create policy "Authenticated users can upload avatars"
   on storage.objects for insert
   with check ( bucket_id = 'avatars' and auth.role() = 'authenticated' );
   
+drop policy if exists "Users can update their own avatar" on storage.objects;
 create policy "Users can update their own avatar"
   on storage.objects for update
   using ( auth.uid() = owner )
