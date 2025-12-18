@@ -7,6 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Never Forget a BBQ",
     start_url: "/",
     display: "standalone",
+    orientation: "portrait",
     background_color: "#eee5e9",
     theme_color: "#D64933",
     icons: [
@@ -14,11 +15,19 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/icon-192.png",
         sizes: "192x192",
         type: "image/png",
+        purpose: "any",
       },
       {
         src: "/icon-512.png",
         sizes: "512x512",
         type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
       },
     ],
   };
