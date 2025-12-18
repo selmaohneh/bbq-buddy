@@ -24,13 +24,26 @@ export default function LoginPage() {
   }, [router, supabase])
 
   return (
-    <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
-      <Auth
-        supabaseClient={supabase}
-        appearance={{ theme: ThemeSupa }}
-        theme="dark"
-        providers={[]}
-      />
+    <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2 mt-10">
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold text-center mb-6 text-primary">Login</h1>
+        <Auth
+          supabaseClient={supabase}
+          appearance={{
+            theme: ThemeSupa,
+            variables: {
+              default: {
+                colors: {
+                  brand: '#D64933',
+                  brandAccent: '#A8321F',
+                },
+              },
+            },
+          }}
+          theme="default"
+          providers={[]}
+        />
+      </div>
     </div>
   )
 }
