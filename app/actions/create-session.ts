@@ -19,7 +19,7 @@ export async function createSession(prevState: any, formData: FormData) {
   // 2. Extract Data
   const title = formData.get('title') as string
   const date = formData.get('date') as string
-  const images = formData.getAll('images') as File[]
+  const newImages = formData.getAll('newImages') as File[]
 
   if (!title || !date) {
     return { message: 'Title and Date are required' }
@@ -29,7 +29,7 @@ export async function createSession(prevState: any, formData: FormData) {
 
   try {
     // 3. Upload Images
-    const validImages = images.filter((img) => img.size > 0 && img.name !== 'undefined')
+    const validImages = newImages.filter((img) => img.size > 0 && img.name !== 'undefined')
 
     for (const file of validImages) {
       const fileExt = file.name.split('.').pop()
@@ -61,12 +61,12 @@ export async function createSession(prevState: any, formData: FormData) {
       })
 
     if (insertError) {
-      console.error('Insert error:', insertError)
-      return { message: 'Failed to save session to database' }
+      console.error('Insert error details:', JSON.stringify(insertError, null, 2))
+      return { message: 'Failed to save session. Please try again.' }
     }
   } catch (err) {
     console.error('Unexpected error:', err)
-    return { message: 'An unexpected error occurred' }
+    return { message: 'An unexpected error occurred. Please try again.' }
   }
 
   revalidatePath('/')

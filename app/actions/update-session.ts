@@ -62,12 +62,12 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
       .eq('user_id', user.id)
 
     if (updateError) {
-      console.error('Update error:', updateError)
-      return { message: 'Failed to update session' }
+      console.error('Update error details:', JSON.stringify(updateError, null, 2))
+      return { message: 'Failed to update session. Please try again.' }
     }
   } catch (err) {
     console.error('Unexpected error:', err)
-    return { message: 'An unexpected error occurred' }
+    return { message: 'An unexpected error occurred. Please try again.' }
   }
 
   revalidatePath('/')

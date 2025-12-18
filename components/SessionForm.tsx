@@ -86,6 +86,10 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
         // Pass all initial images to ensure we clean up everything on delete
       await deleteAction(initialData.id, initialData.images || [])
     } catch (error) {
+      // Ignore Next.js redirect errors
+      if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
+        throw error;
+      }
       console.error('Delete failed', error)
       alert('Failed to delete session')
       setIsDeleting(false)
