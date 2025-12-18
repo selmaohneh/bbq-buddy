@@ -31,7 +31,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SupabaseProvider>
-          <ThemeProvider>
+          <ThemeProvider
+            attribute="data-theme"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
             <Navbar />
             <main className="flex flex-col items-center min-h-screen">
               {children}
