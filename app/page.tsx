@@ -2,9 +2,17 @@
 
 import { useSupabase } from './supabase-provider'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function Page() {
   const { session, supabase } = useSupabase()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.refresh()
+    router.push('/login')
+  }
 
   return (
     <div className="flex-1 w-full flex flex-col gap-20 items-center">
@@ -15,10 +23,7 @@ export default function Page() {
               Hey, {session.user.email}!
               <button
                 className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
-                onClick={async () => {
-                  await supabase.auth.signOut()
-                  window.location.href = '/login'
-                }}
+                onClick={handleLogout}
               >
                 Logout
               </button>

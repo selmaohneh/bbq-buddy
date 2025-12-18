@@ -7,6 +7,7 @@ export async function createClient() {
   // Create a server-side client for the current request
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    // Note: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY corresponds to the Anon key
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
     {
       cookies: {
