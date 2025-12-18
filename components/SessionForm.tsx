@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { SubmitButton } from '@/components/SubmitButton'
 import { Session } from '@/types/session'
+import { toast } from 'sonner'
 
 interface SessionFormProps {
   initialData?: Session
@@ -91,7 +92,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
         throw error;
       }
       console.error('Delete failed', error)
-      alert('Failed to delete session')
+      toast.error('Failed to delete session')
       setIsDeleting(false)
     }
   }
@@ -218,7 +219,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
               <div className="grid grid-cols-3 gap-2 mt-2">
                 {/* Existing Images */}
                 {existingImages.map((url, index) => (
-                  <div key={url} className="relative aspect-square rounded-lg overflow-hidden group bg-gray-100">
+                  <div key={url} className="relative aspect-square rounded-lg overflow-hidden group bg-input">
                     <Image
                       src={url}
                       alt={`Existing ${index}`}
@@ -239,7 +240,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
                 
                 {/* New Files */}
                 {newFilePreviews.map((url, index) => (
-                  <div key={url} className="relative aspect-square rounded-lg overflow-hidden group bg-gray-100">
+                  <div key={url} className="relative aspect-square rounded-lg overflow-hidden group bg-input">
                     <Image
                       src={url}
                       alt={`New Preview ${index}`}

@@ -20,8 +20,8 @@ export default function Navbar() {
           <span className="text-xl font-bold tracking-tight">BBQ Buddy</span>
         </Link>
         <div className="flex items-center gap-2">
-          <AuthButton />
           <ThemeToggle />
+          <AuthButton />
         </div>
       </div>
     </nav>

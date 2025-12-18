@@ -4,13 +4,15 @@ import { createClient } from '@/utils/supabase/client'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function LoginPage() {
   const supabase = createClient()
   const router = useRouter()
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
+    setIsMounted(true)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
@@ -23,10 +25,12 @@ export default function LoginPage() {
     return () => subscription.unsubscribe()
   }, [router, supabase])
 
+  if (!isMounted) return null
+
   return (
     <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2 mt-10">
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-6 text-primary">Login</h1>
+      <div className="bg-card text-card-foreground p-6 rounded-lg shadow-md border border-border">
+        <h1 className="text-2xl font-bold text-center mb-6 text-[var(--primary)]">Login</h1>
         <Auth
           supabaseClient={supabase}
           appearance={{
@@ -36,6 +40,10 @@ export default function LoginPage() {
                 colors: {
                   brand: '#D64933',
                   brandAccent: '#A8321F',
+                  inputBackground: 'var(--input-background)',
+                  inputText: 'var(--foreground)',
+                  inputBorder: 'var(--border)',
+                  inputLabelText: 'var(--foreground)',
                 },
               },
             },
