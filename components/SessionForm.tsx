@@ -219,7 +219,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
               <div className="grid grid-cols-3 gap-2 mt-2">
                 {/* Existing Images */}
                 {existingImages.map((url, index) => (
-                  <div key={url} className="relative aspect-square rounded-lg overflow-hidden group bg-gray-100">
+                  <div key={url} className="relative aspect-square rounded-lg overflow-hidden group bg-input">
                     <Image
                       src={url}
                       alt={`Existing ${index}`}
@@ -240,7 +240,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
                 
                 {/* New Files */}
                 {newFilePreviews.map((url, index) => (
-                  <div key={url} className="relative aspect-square rounded-lg overflow-hidden group bg-gray-100">
+                  <div key={url} className="relative aspect-square rounded-lg overflow-hidden group bg-input">
                     <Image
                       src={url}
                       alt={`New Preview ${index}`}

@@ -17,7 +17,7 @@ export default async function Page() {
       <div className="flex flex-col items-center gap-6 w-full max-w-lg animate-in fade-in slide-in-from-bottom-8 duration-700">
         {!session ? (
           <>
-            <div className="relative w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden bg-white p-2 shadow-xl ring-4 ring-primary/20 mt-10">
+            <div className="relative w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden bg-card p-2 shadow-xl ring-4 ring-primary/20 mt-10">
             <Image
                 src="/logo.png"
                 alt="BBQ Buddy Logo"

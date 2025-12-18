@@ -94,7 +94,7 @@ export default function Avatar({
         />
       ) : (
         <div
-          className="bg-gray-200 rounded-full flex items-center justify-center text-gray-500"
+          className="bg-input rounded-full flex items-center justify-center text-gray-500"
           style={{ height: size, width: size }}
         >
           <svg
