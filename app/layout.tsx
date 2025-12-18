@@ -28,7 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <main className="flex">
+        <main className="flex flex-col items-center min-h-screen">
           <SupabaseProvider>{children}</SupabaseProvider>
         </main>
       </body>
