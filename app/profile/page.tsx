@@ -5,6 +5,7 @@ import { useSupabase } from '@/app/supabase-provider'
 import Avatar from '@/components/Avatar'
 import { useRouter } from 'next/navigation'
 import { useProfile } from '@/components/ProfileProvider'
+import { toast } from 'sonner'
 
 export default function Profile() {
   const { supabase, session } = useSupabase()
@@ -50,9 +51,9 @@ export default function Profile() {
       
       // Update global context
       await refreshProfile()
-      alert('Profile updated!')
+      toast.success('Profile updated!')
     } catch (error: any) {
-      alert(error.message || 'Error updating the data!')
+      toast.error(error.message || 'Error updating the data!')
       console.log(error)
     } finally {
       setLoading(false)

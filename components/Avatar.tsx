@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSupabase } from '@/app/supabase-provider'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 export default function Avatar({
   uid,
@@ -67,7 +68,7 @@ export default function Avatar({
         onUpload(filePath)
       }
     } catch (error) {
-      alert('Error uploading avatar!')
+      toast.error('Error uploading avatar!')
       console.log(error)
     } finally {
       setUploading(false)

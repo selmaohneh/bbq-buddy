@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { SubmitButton } from '@/components/SubmitButton'
 import { Session } from '@/types/session'
+import { toast } from 'sonner'
 
 interface SessionFormProps {
   initialData?: Session
@@ -91,7 +92,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
         throw error;
       }
       console.error('Delete failed', error)
-      alert('Failed to delete session')
+      toast.error('Failed to delete session')
       setIsDeleting(false)
     }
   }
