@@ -27,7 +27,7 @@ export default function Page() {
             BBQ Buddy
           </h1>
           <p className="text-xl md:text-2xl text-foreground/80 font-medium italic">
-            "Never Forget a BBQ"
+            Never Forget a BBQ
           </p>
         </div>
 
@@ -45,19 +45,7 @@ export default function Page() {
           </div>
         ) : (
           <div className="mt-8 space-y-6 w-full">
-            <div className="bg-white/50 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-white/20">
-              <h2 className="text-2xl font-bold mb-2">Welcome back!</h2>
-              <p className="text-foreground/80">
-                Ready to fire up the grill?
-              </p>
-            </div>
-             {/* Placeholder for Feed/Dashboard */}
-             <div className="grid grid-cols-1 gap-4 w-full">
-                <button className="w-full bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all text-left border border-gray-100 group flex items-center justify-between cursor-pointer">
-                    <span className="font-semibold text-primary group-hover:underline">Start a new Session</span>
-                    <span className="text-2xl text-primary">+</span>
-                </button>
-             </div>
+            
           </div>
         )}
       </div>
