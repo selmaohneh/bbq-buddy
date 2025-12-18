@@ -99,3 +99,8 @@ create trigger on_profile_update
   before update on public.profiles
   for each row execute procedure public.prevent_username_change();
 
+
+-- 10. CLEANUP: Remove username immutability (User request)
+drop trigger if exists on_profile_update on public.profiles;
+drop function if exists public.prevent_username_change();
+

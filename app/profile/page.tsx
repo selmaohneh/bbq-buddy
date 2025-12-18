@@ -71,10 +71,15 @@ export default function Profile() {
       }
 
       const { error } = await supabase.from('profiles').upsert(updates)
-      if (error) throw error
+      if (error) {
+        if (error.code === '23505') { // Postgres unique_violation code
+            throw new Error('Username already taken.')
+        }
+        throw error
+      }
       alert('Profile updated!')
-    } catch (error) {
-      alert('Error updating the data!')
+    } catch (error: any) {
+      alert(error.message || 'Error updating the data!')
       console.log(error)
     } finally {
       setLoading(false)
@@ -129,11 +134,9 @@ export default function Profile() {
             id="username"
             type="text"
             value={username || ''}
-            readOnly
-            disabled
-            className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full p-2 border rounded bg-white dark:bg-gray-900 text-[var(--foreground)]"
           />
-          <p className="text-xs text-gray-500 mt-1">Username cannot be changed.</p>
         </div>
 
         <div className="flex flex-col gap-4">
