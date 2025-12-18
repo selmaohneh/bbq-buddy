@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import AuthButton from './AuthButton';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   return (
@@ -18,7 +19,10 @@ export default function Navbar() {
           </div>
           <span className="text-xl font-bold tracking-tight">BBQ Buddy</span>
         </Link>
-        <AuthButton />
+        <div className="flex items-center">
+          <AuthButton />
+          <ThemeToggle />
+        </div>
       </div>
     </nav>
   );
