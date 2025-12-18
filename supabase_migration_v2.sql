@@ -104,3 +104,8 @@ create trigger on_profile_update
 drop trigger if exists on_profile_update on public.profiles;
 drop function if exists public.prevent_username_change();
 
+
+-- 11. PROFILES: Add updated_at column
+alter table public.profiles
+add column if not exists updated_at timestamp with time zone;
+
