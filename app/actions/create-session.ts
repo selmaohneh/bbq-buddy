@@ -19,6 +19,8 @@ export async function createSession(prevState: any, formData: FormData) {
   // 2. Extract Data
   const title = formData.get('title') as string
   const date = formData.get('date') as string
+  const mealTimeRaw = formData.get('mealTime') as string
+  const mealTime = mealTimeRaw && mealTimeRaw.trim() !== '' ? mealTimeRaw : null
   const newImages = formData.getAll('newImages') as File[]
 
   if (!title || !date) {
@@ -69,6 +71,7 @@ export async function createSession(prevState: any, formData: FormData) {
         user_id: user.id,
         title,
         date,
+        meal_time: mealTime,
         images: imageUrls,
       })
 
