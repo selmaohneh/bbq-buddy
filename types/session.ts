@@ -20,6 +20,10 @@ export const WEATHER_OPTIONS: WeatherTypeOption[] = [
   { value: 'Snow', label: 'Snow', icon: 'cloud-snow' },
 ];
 
+// People counter constants
+export const DEFAULT_NUMBER_OF_PEOPLE = 1;
+export const MIN_NUMBER_OF_PEOPLE = 1;
+
 export interface Session {
   id: string;
   user_id: string;
@@ -27,6 +31,7 @@ export interface Session {
   date: string; // ISO date string YYYY-MM-DD
   meal_time: MealTime | null; // Optional meal time category
   weather_types: WeatherType[] | null; // Optional weather conditions (multi-select)
+  number_of_people: number; // Number of people fed (minimum 1)
   images: string[]; // URLs
   created_at: string;
 }

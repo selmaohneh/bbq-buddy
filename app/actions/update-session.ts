@@ -33,6 +33,15 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
     }
   }
 
+  // Parse number of people
+  const numberOfPeopleRaw = formData.get('numberOfPeople') as string
+  const numberOfPeople = numberOfPeopleRaw ? parseInt(numberOfPeopleRaw, 10) : 1
+
+  // Validate minimum value
+  if (isNaN(numberOfPeople) || numberOfPeople < 1) {
+    return { message: 'Number of people must be at least 1' }
+  }
+
   const newImages = formData.getAll('newImages') as File[]
   const keptImages = formData.getAll('keptImages') as string[]
 
@@ -100,6 +109,7 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
         date,
         meal_time: mealTime,
         weather_types: weatherTypes,
+        number_of_people: numberOfPeople,
         images: updatedImageUrls,
       })
       .eq('id', id)
