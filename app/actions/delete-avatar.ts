@@ -48,16 +48,58 @@ export async function deleteAvatar(avatarPath: string): Promise<{ success: boole
       .from('avatars')
       .remove([avatarPath])
 
-    console.log('[deleteAvatar] Storage remove response - data:', data, 'error:', error)
+    console.log('[deleteAvatar] Storage remove response - data:', JSON.stringify(data), 'error:', error)
 
     if (error) {
       console.error('[deleteAvatar] Storage delete error:', error)
-      // Don't throw - file might already be deleted or not exist
-      // This is a best-effort cleanup
       return { success: false, error: error.message }
     }
 
-    console.log('[deleteAvatar] Avatar deleted successfully:', avatarPath)
+    // CRITICAL: Supabase Storage .remove() can return success even when deletion fails
+    // due to RLS policies. We need to verify the file was actually deleted.
+    // The data array should contain the deleted file objects.
+    if (!data || data.length === 0) {
+      console.error('[deleteAvatar] Storage delete returned empty data - file may not have been deleted')
+      console.error('[deleteAvatar] This usually means RLS policies are blocking the delete.')
+      console.error('[deleteAvatar] Please ensure the following SQL policy exists in Supabase:')
+      console.error(`
+        CREATE POLICY "Users can delete own avatar"
+        ON storage.objects
+        FOR DELETE
+        TO authenticated
+        USING (
+          bucket_id = 'avatars'
+          AND (storage.foldername(name))[1] = auth.uid()::text
+          OR name LIKE auth.uid()::text || '%'
+        );
+      `)
+      return {
+        success: false,
+        error: 'Delete operation returned no data. RLS policy may be blocking deletion. Check server logs.'
+      }
+    }
+
+    // Verify the expected file was in the deleted list
+    const deletedFile = data.find((item: { name: string }) => item.name === avatarPath)
+    if (!deletedFile) {
+      console.error('[deleteAvatar] Expected file not found in deleted list. Data:', JSON.stringify(data))
+      return { success: false, error: 'File was not in the deleted list' }
+    }
+
+    console.log('[deleteAvatar] Avatar deleted successfully:', avatarPath, 'Deleted item:', deletedFile)
+
+    // Double-check by trying to get file info (should fail if deleted)
+    const { data: checkData } = await supabase.storage
+      .from('avatars')
+      .list('', { search: avatarPath })
+
+    const fileStillExists = checkData?.some((f: { name: string }) => f.name === avatarPath)
+    if (fileStillExists) {
+      console.error('[deleteAvatar] VERIFICATION FAILED: File still exists after delete!', avatarPath)
+      return { success: false, error: 'File still exists after delete - RLS policy may be misconfigured' }
+    }
+
+    console.log('[deleteAvatar] Verification passed - file no longer exists in storage')
     return { success: true }
   } catch (error) {
     console.error('[deleteAvatar] Unexpected error deleting avatar:', error)

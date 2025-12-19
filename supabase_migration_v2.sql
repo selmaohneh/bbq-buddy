@@ -123,11 +123,13 @@ create policy "Users can delete their own session images"
 
 -- 13. STORAGE POLICIES: Add DELETE policy for avatars
 -- Users can delete their own avatars (files that start with their user_id)
+-- IMPORTANT: UUIDs contain hyphens (e.g., cde6a3c6-9be6-458c-af36-157a94ba8ca7)
+-- So we can't use split_part on '-'. Instead we check if the filename starts with the user_id
 drop policy if exists "Users can delete their own avatar" on storage.objects;
 create policy "Users can delete their own avatar"
   on storage.objects for delete
   using (
     bucket_id = 'avatars'
-    and auth.uid()::text = split_part(name, '-', 1)
+    and name like auth.uid()::text || '-%'
   );
 

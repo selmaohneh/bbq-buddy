@@ -18,6 +18,8 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
   // 1. Extract Data
   const title = formData.get('title') as string
   const date = formData.get('date') as string
+  const mealTimeRaw = formData.get('mealTime') as string
+  const mealTime = mealTimeRaw && mealTimeRaw.trim() !== '' ? mealTimeRaw : null
   const newImages = formData.getAll('newImages') as File[]
   const keptImages = formData.getAll('keptImages') as string[]
 
@@ -83,6 +85,7 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
       .update({
         title,
         date,
+        meal_time: mealTime,
         images: updatedImageUrls,
       })
       .eq('id', id)

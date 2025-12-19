@@ -4,7 +4,8 @@ import { useActionState, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { SubmitButton } from '@/components/SubmitButton'
-import { Session } from '@/types/session'
+import { MealTimeSelector } from '@/components/MealTimeSelector'
+import { Session, MealTime } from '@/types/session'
 import { toast } from 'sonner'
 
 interface SessionFormProps {
@@ -39,6 +40,10 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
   const [date, setDate] = useState(
     initialData?.date || new Date().toISOString().split('T')[0]
   )
+
+  // Meal time state
+  const [mealTime, setMealTime] = useState<MealTime | null>(initialData?.meal_time || null)
+
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,11 +74,14 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
     newFiles.forEach((file) => {
       formData.append('newImages', file)
     })
-    
+
     // Append list of existing images to keep
     existingImages.forEach((url) => {
       formData.append('keptImages', url)
     })
+
+    // Append meal time (empty string if null, so it can be processed by server action)
+    formData.append('mealTime', mealTime || '')
 
     formAction(formData)
   }
@@ -184,6 +192,15 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
                 </svg>
               </div>
             </div>
+          </div>
+
+          {/* Meal Time */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-foreground/80">
+              Meal Time
+              <span className="text-foreground/40 font-normal text-sm ml-2">(optional)</span>
+            </label>
+            <MealTimeSelector value={mealTime} onChange={setMealTime} />
           </div>
 
           {/* Images Custom Control */}

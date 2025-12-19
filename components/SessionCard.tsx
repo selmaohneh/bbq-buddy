@@ -68,10 +68,14 @@ export function SessionCard({ session }: SessionCardProps) {
           {dateString}
         </time>
 
-        {/* Future tags placeholder area */}
-        <div className="mt-auto pt-2 flex flex-wrap gap-2">
-           {/* Tags will go here */}
-        </div>
+        {/* Tags area */}
+        {session.meal_time && (
+          <div className="mt-auto pt-2 flex flex-wrap gap-2">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
+              {session.meal_time}
+            </span>
+          </div>
+        )}
       </div>
     </Link>
   )
