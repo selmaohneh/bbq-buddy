@@ -20,6 +20,23 @@ export const WEATHER_OPTIONS: WeatherTypeOption[] = [
   { value: 'Snow', label: 'Snow', icon: 'cloud-snow' },
 ];
 
+// Grill Type Constants
+export type GrillType = 'Coal' | 'Gas' | 'Wood' | 'Electric' | 'Smoke' | 'Other';
+
+export interface GrillTypeOption {
+  value: string; // allow string for custom types, but strictly it's one of Predefined or string
+  label: string;
+  icon: string;
+}
+
+export const PREDEFINED_GRILL_TYPES: GrillTypeOption[] = [
+  { value: 'Coal', label: 'Coal', icon: 'flame' },
+  { value: 'Gas', label: 'Gas', icon: 'fuel' },
+  { value: 'Wood', label: 'Wood', icon: 'logs' }, // using 'logs' placeholder, will map to TreePine or something
+  { value: 'Electric', label: 'Electric', icon: 'zap' },
+  { value: 'Smoke', label: 'Smoke', icon: 'cloud-fog' },
+];
+
 // People counter constants
 export const DEFAULT_NUMBER_OF_PEOPLE = 1;
 export const MIN_NUMBER_OF_PEOPLE = 1;
@@ -31,6 +48,7 @@ export interface Session {
   date: string; // ISO date string YYYY-MM-DD
   meal_time: MealTime | null; // Optional meal time category
   weather_types: WeatherType[] | null; // Optional weather conditions (multi-select)
+  grill_types: string[] | null; // Optional grill types (multi-select, including custom)
   number_of_people: number; // Number of people fed (minimum 1)
   images: string[]; // URLs
   created_at: string;

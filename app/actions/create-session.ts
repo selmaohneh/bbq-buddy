@@ -34,6 +34,18 @@ export async function createSession(prevState: any, formData: FormData) {
     }
   }
 
+  // Parse grill types
+  const grillTypesRaw = formData.get('grillTypes') as string
+  let grillTypes: string[] | null = null
+  if (grillTypesRaw) {
+    try {
+      const parsed = JSON.parse(grillTypesRaw)
+      grillTypes = Array.isArray(parsed) && parsed.length > 0 ? parsed : null
+    } catch (e) {
+      console.error('Failed to parse grill types:', e)
+    }
+  }
+
   // Parse number of people
   const numberOfPeopleRaw = formData.get('numberOfPeople') as string
   const numberOfPeople = numberOfPeopleRaw ? parseInt(numberOfPeopleRaw, 10) : 1
@@ -95,6 +107,7 @@ export async function createSession(prevState: any, formData: FormData) {
         date,
         meal_time: mealTime,
         weather_types: weatherTypes,
+        grill_types: grillTypes,
         number_of_people: numberOfPeople,
         images: imageUrls,
       })
