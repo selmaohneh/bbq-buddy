@@ -212,36 +212,6 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
             </div>
           </div>
 
-          {/* Meal Time */}
-          <div className="flex flex-col gap-2">
-            <label className="font-semibold text-foreground/80">
-              Meal Time
-              <span className="text-foreground/40 font-normal text-sm ml-2">(optional)</span>
-            </label>
-            <MealTimeSelector value={mealTime} onChange={setMealTime} />
-          </div>
-
-          {/* Weather */}
-          <div className="flex flex-col gap-2">
-            <label className="font-semibold text-foreground/80">
-              Weather
-              <span className="text-foreground/40 font-normal text-sm ml-2">(optional)</span>
-            </label>
-            <WeatherSelector value={weatherTypes} onChange={setWeatherTypes} />
-          </div>
-
-          {/* Number of People */}
-          <div className="flex flex-col gap-2">
-            <label className="font-semibold text-foreground/80">
-              Number of People
-            </label>
-            <NumberControl
-              value={numberOfPeople}
-              onChange={setNumberOfPeople}
-              min={MIN_NUMBER_OF_PEOPLE}
-            />
-          </div>
-
           {/* Images Custom Control */}
           <div className="flex flex-col gap-4">
             <label className="font-semibold text-foreground/80">
@@ -317,6 +287,34 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Meal Time */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-foreground/80">
+              Meal Time
+            </label>
+            <MealTimeSelector value={mealTime} onChange={setMealTime} />
+          </div>
+
+          {/* Weather */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-foreground/80">
+              Weather
+            </label>
+            <WeatherSelector value={weatherTypes} onChange={setWeatherTypes} />
+          </div>
+
+          {/* Number of People */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-foreground/80">
+              Number of People
+            </label>
+            <NumberControl
+              value={numberOfPeople}
+              onChange={setNumberOfPeople}
+              min={MIN_NUMBER_OF_PEOPLE}
+            />
           </div>
 
           <SubmitButton />

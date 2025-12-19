@@ -22,7 +22,7 @@ export function NumberControl({ value, onChange, min = 1 }: NumberControlProps) 
   const isAtMinimum = value <= min
 
   return (
-    <div className="inline-flex items-center h-12 border border-border rounded-xl bg-foreground/5">
+    <div className="flex w-full items-center h-12 border border-border rounded-xl bg-foreground/5">
       {/* Decrease Button */}
       <button
         type="button"
@@ -42,7 +42,7 @@ export function NumberControl({ value, onChange, min = 1 }: NumberControlProps) 
       </button>
 
       {/* Value Display */}
-      <div className="flex items-center justify-center min-w-[60px] px-4 text-center">
+      <div className="flex flex-1 items-center justify-center px-4 text-center">
         <span className="text-lg font-semibold text-foreground">
           {value}
         </span>
