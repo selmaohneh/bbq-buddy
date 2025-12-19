@@ -22,6 +22,6 @@ The Meal Time Selection feature allows users to categorize their BBQ sessions by
 
 - As a database administrator, I want the meal time data stored as a text column in the sessions table so that it's queryable and can support future features like filtering sessions by meal time.
 
-- As a user switching between light and dark themes, I want the meal time tags to adapt their colors appropriately so that they remain readable and visually consistent with the app's theme.
+- As a user, I want the meal time tags to use colors that are readable and visually consistent with the app's dark theme.
 
 - As a developer, I want the meal time field to be included in all session CRUD operations (create, read, update) so that data integrity is maintained across the application lifecycle.
