@@ -67,6 +67,8 @@ export async function createSession(prevState: any, formData: FormData) {
     return { message: 'Number of people must be at least 1' }
   }
 
+  const notes = formData.get('notes') as string
+
   const newImages = formData.getAll('newImages') as File[]
 
   if (!title || !date) {
@@ -130,6 +132,7 @@ export async function createSession(prevState: any, formData: FormData) {
         grill_types: grillTypes,
         meat_types: meatTypes,
         number_of_people: numberOfPeople,
+        notes,
         images: imageUrls,
       })
 

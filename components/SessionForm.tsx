@@ -9,6 +9,7 @@ import { WeatherSelector } from '@/components/WeatherSelector'
 import { GrillTypeSelector } from '@/components/GrillTypeSelector'
 import { MeatTypeSelector } from '@/components/MeatTypeSelector'
 import { NumberControl } from '@/components/NumberControl'
+import { NotesSection } from '@/components/NotesSection'
 import { Session, MealTime, WeatherType, DEFAULT_NUMBER_OF_PEOPLE, MIN_NUMBER_OF_PEOPLE } from '@/types/session'
 import { toast } from 'sonner'
 
@@ -70,6 +71,9 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
     initialData?.number_of_people ?? DEFAULT_NUMBER_OF_PEOPLE
   )
 
+  // Notes state
+  const [notes, setNotes] = useState<string>(initialData?.notes || '')
+
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,6 +124,9 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
 
     // Append number of people
     formData.append('numberOfPeople', numberOfPeople.toString())
+
+    // Append notes
+    formData.append('notes', notes)
 
     formAction(formData)
   }
@@ -352,6 +359,14 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
               onChange={setNumberOfPeople}
               min={MIN_NUMBER_OF_PEOPLE}
             />
+          </div>
+
+          {/* Notes */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-foreground/80">
+              Notes
+            </label>
+            <NotesSection value={notes} onChange={setNotes} />
           </div>
 
           <SubmitButton />

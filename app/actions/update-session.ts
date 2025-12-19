@@ -66,6 +66,8 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
     return { message: 'Number of people must be at least 1' }
   }
 
+  const notes = formData.get('notes') as string
+
   const newImages = formData.getAll('newImages') as File[]
   const keptImages = formData.getAll('keptImages') as string[]
 
@@ -144,6 +146,7 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
         grill_types: grillTypes,
         meat_types: meatTypes,
         number_of_people: numberOfPeople,
+        notes,
         images: updatedImageUrls,
       })
       .eq('id', id)

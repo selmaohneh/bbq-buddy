@@ -68,6 +68,7 @@ export interface Session {
   grill_types: string[] | null; // Optional grill types (multi-select, including custom)
   meat_types: string[] | null; // Optional meat types (multi-select, including custom)
   number_of_people: number; // Number of people fed (minimum 1)
+  notes: string | null; // Optional user notes
   images: string[]; // URLs
   created_at: string;
 }
