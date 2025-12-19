@@ -128,15 +128,12 @@ export default function Onboarding() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username (min 3 characters)"
+              placeholder="Enter your username"
               className="w-full p-2 border border-border rounded bg-card text-card-foreground"
               required
               minLength={3}
               disabled={loading}
             />
-            <p className="text-xs text-foreground/60 mt-1">
-              This will be your unique identifier. Minimum 3 characters.
-            </p>
           </div>
 
           <button
