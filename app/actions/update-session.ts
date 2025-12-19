@@ -20,6 +20,19 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
   const date = formData.get('date') as string
   const mealTimeRaw = formData.get('mealTime') as string
   const mealTime = mealTimeRaw && mealTimeRaw.trim() !== '' ? mealTimeRaw : null
+
+  // Parse weather types
+  const weatherTypesRaw = formData.get('weatherTypes') as string
+  let weatherTypes: string[] | null = null
+  if (weatherTypesRaw) {
+    try {
+      const parsed = JSON.parse(weatherTypesRaw)
+      weatherTypes = Array.isArray(parsed) && parsed.length > 0 ? parsed : null
+    } catch (e) {
+      console.error('Failed to parse weather types:', e)
+    }
+  }
+
   const newImages = formData.getAll('newImages') as File[]
   const keptImages = formData.getAll('keptImages') as string[]
 
@@ -86,6 +99,7 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
         title,
         date,
         meal_time: mealTime,
+        weather_types: weatherTypes,
         images: updatedImageUrls,
       })
       .eq('id', id)
