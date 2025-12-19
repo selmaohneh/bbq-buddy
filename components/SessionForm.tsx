@@ -5,7 +5,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { SubmitButton } from '@/components/SubmitButton'
 import { MealTimeSelector } from '@/components/MealTimeSelector'
-import { Session, MealTime } from '@/types/session'
+import { WeatherSelector } from '@/components/WeatherSelector'
+import { Session, MealTime, WeatherType } from '@/types/session'
 import { toast } from 'sonner'
 
 interface SessionFormProps {
@@ -43,6 +44,11 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
 
   // Meal time state
   const [mealTime, setMealTime] = useState<MealTime | null>(initialData?.meal_time || null)
+
+  // Weather types state
+  const [weatherTypes, setWeatherTypes] = useState<WeatherType[]>(
+    initialData?.weather_types || []
+  )
 
   const [isDeleting, setIsDeleting] = useState(false)
 
@@ -82,6 +88,9 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
 
     // Append meal time (empty string if null, so it can be processed by server action)
     formData.append('mealTime', mealTime || '')
+
+    // Append weather types as JSON string
+    formData.append('weatherTypes', JSON.stringify(weatherTypes))
 
     formAction(formData)
   }
@@ -201,6 +210,15 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
               <span className="text-foreground/40 font-normal text-sm ml-2">(optional)</span>
             </label>
             <MealTimeSelector value={mealTime} onChange={setMealTime} />
+          </div>
+
+          {/* Weather */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-foreground/80">
+              Weather
+              <span className="text-foreground/40 font-normal text-sm ml-2">(optional)</span>
+            </label>
+            <WeatherSelector value={weatherTypes} onChange={setWeatherTypes} />
           </div>
 
           {/* Images Custom Control */}

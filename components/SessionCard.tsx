@@ -1,6 +1,7 @@
 import { Session } from '@/types/session'
 import Image from 'next/image'
 import Link from 'next/link'
+import { WeatherTag } from '@/components/WeatherTag'
 
 interface SessionCardProps {
   session: Session
@@ -69,11 +70,19 @@ export function SessionCard({ session }: SessionCardProps) {
         </time>
 
         {/* Tags area */}
-        {session.meal_time && (
+        {(session.meal_time || (session.weather_types && session.weather_types.length > 0)) && (
           <div className="mt-auto pt-2 flex flex-wrap gap-2">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
-              {session.meal_time}
-            </span>
+            {/* Meal Time Tag */}
+            {session.meal_time && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
+                {session.meal_time}
+              </span>
+            )}
+
+            {/* Weather Tags */}
+            {session.weather_types?.map((weather) => (
+              <WeatherTag key={weather} weather={weather} size="sm" />
+            ))}
           </div>
         )}
       </div>
