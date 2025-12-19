@@ -34,6 +34,30 @@ export async function createSession(prevState: any, formData: FormData) {
     }
   }
 
+  // Parse grill types
+  const grillTypesRaw = formData.get('grillTypes') as string
+  let grillTypes: string[] | null = null
+  if (grillTypesRaw) {
+    try {
+      const parsed = JSON.parse(grillTypesRaw)
+      grillTypes = Array.isArray(parsed) && parsed.length > 0 ? parsed : null
+    } catch (e) {
+      console.error('Failed to parse grill types:', e)
+    }
+  }
+
+  // Parse meat types
+  const meatTypesRaw = formData.get('meatTypes') as string
+  let meatTypes: string[] | null = null
+  if (meatTypesRaw) {
+    try {
+      const parsed = JSON.parse(meatTypesRaw)
+      meatTypes = Array.isArray(parsed) && parsed.length > 0 ? parsed : null
+    } catch (e) {
+      console.error('Failed to parse meat types:', e)
+    }
+  }
+
   // Parse number of people
   const numberOfPeopleRaw = formData.get('numberOfPeople') as string
   const numberOfPeople = numberOfPeopleRaw ? parseInt(numberOfPeopleRaw, 10) : 1
@@ -43,10 +67,20 @@ export async function createSession(prevState: any, formData: FormData) {
     return { message: 'Number of people must be at least 1' }
   }
 
+  const notes = formData.get('notes') as string
+
   const newImages = formData.getAll('newImages') as File[]
 
   if (!title || !date) {
     return { message: 'Title and Date are required' }
+  }
+
+  // Validate date is not in the future
+  const selectedDate = new Date(date)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  if (selectedDate > today) {
+    return { message: 'Date cannot be in the future' }
   }
 
   const imageUrls: string[] = []
@@ -95,7 +129,10 @@ export async function createSession(prevState: any, formData: FormData) {
         date,
         meal_time: mealTime,
         weather_types: weatherTypes,
+        grill_types: grillTypes,
+        meat_types: meatTypes,
         number_of_people: numberOfPeople,
+        notes,
         images: imageUrls,
       })
 

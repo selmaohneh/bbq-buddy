@@ -6,7 +6,10 @@ import Image from 'next/image'
 import { SubmitButton } from '@/components/SubmitButton'
 import { MealTimeSelector } from '@/components/MealTimeSelector'
 import { WeatherSelector } from '@/components/WeatherSelector'
+import { GrillTypeSelector } from '@/components/GrillTypeSelector'
+import { MeatTypeSelector } from '@/components/MeatTypeSelector'
 import { NumberControl } from '@/components/NumberControl'
+import { NotesSection } from '@/components/NotesSection'
 import { Session, MealTime, WeatherType, DEFAULT_NUMBER_OF_PEOPLE, MIN_NUMBER_OF_PEOPLE } from '@/types/session'
 import { toast } from 'sonner'
 
@@ -43,6 +46,8 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
     initialData?.date || new Date().toISOString().split('T')[0]
   )
 
+  const today = new Date().toISOString().split('T')[0]
+
   // Meal time state
   const [mealTime, setMealTime] = useState<MealTime | null>(initialData?.meal_time || null)
 
@@ -51,10 +56,23 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
     initialData?.weather_types || []
   )
 
+  // Grill types state
+  const [grillTypes, setGrillTypes] = useState<string[]>(
+    initialData?.grill_types || []
+  )
+
+  // Meat types state
+  const [meatTypes, setMeatTypes] = useState<string[]>(
+    initialData?.meat_types || []
+  )
+
   // Number of people state
   const [numberOfPeople, setNumberOfPeople] = useState<number>(
     initialData?.number_of_people ?? DEFAULT_NUMBER_OF_PEOPLE
   )
+
+  // Notes state
+  const [notes, setNotes] = useState<string>(initialData?.notes || '')
 
   const [isDeleting, setIsDeleting] = useState(false)
 
@@ -98,8 +116,17 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
     // Append weather types as JSON string
     formData.append('weatherTypes', JSON.stringify(weatherTypes))
 
+    // Append grill types as JSON string
+    formData.append('grillTypes', JSON.stringify(grillTypes))
+
+    // Append meat types as JSON string
+    formData.append('meatTypes', JSON.stringify(meatTypes))
+
     // Append number of people
     formData.append('numberOfPeople', numberOfPeople.toString())
+
+    // Append notes
+    formData.append('notes', notes)
 
     formAction(formData)
   }
@@ -201,6 +228,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
                 name="date"
                 required
                 value={date}
+                max={today}
                 onChange={(e) => setDate(e.target.value)}
                 className="absolute inset-0 opacity-0 pointer-events-none"
               />
@@ -305,6 +333,22 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
             <WeatherSelector value={weatherTypes} onChange={setWeatherTypes} />
           </div>
 
+          {/* Grill Types */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-foreground/80">
+              Grill Types
+            </label>
+            <GrillTypeSelector value={grillTypes} onChange={setGrillTypes} />
+          </div>
+
+          {/* Meat Types */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-foreground/80">
+              Meat Types
+            </label>
+            <MeatTypeSelector value={meatTypes} onChange={setMeatTypes} />
+          </div>
+
           {/* Number of People */}
           <div className="flex flex-col gap-2">
             <label className="font-semibold text-foreground/80">
@@ -315,6 +359,14 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
               onChange={setNumberOfPeople}
               min={MIN_NUMBER_OF_PEOPLE}
             />
+          </div>
+
+          {/* Notes */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-foreground/80">
+              Notes
+            </label>
+            <NotesSection value={notes} onChange={setNotes} />
           </div>
 
           <SubmitButton />
