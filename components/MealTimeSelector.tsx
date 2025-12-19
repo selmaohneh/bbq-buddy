@@ -32,8 +32,8 @@ export function MealTimeSelector({ value, onChange }: MealTimeSelectorProps) {
               transition-all duration-150 ease-in-out
               border
               ${isSelected
-                ? 'bg-gray-500 text-white border-gray-500'
-                : 'bg-gray-800 text-gray-300 border-gray-600 hover:border-gray-500'
+                ? 'bg-purple-600 text-white border-purple-600'
+                : 'bg-purple-50 text-purple-700 border-purple-200 hover:border-purple-300'
               }
             `}
             aria-pressed={isSelected}

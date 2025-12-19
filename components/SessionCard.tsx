@@ -80,7 +80,7 @@ export function SessionCard({ session }: SessionCardProps) {
           <div className="mt-auto pt-2 flex flex-wrap gap-2">
             {/* Meal Time Tag */}
             {session.meal_time && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 border border-purple-200">
                 {session.meal_time}
               </span>
             )}
