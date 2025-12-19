@@ -6,7 +6,8 @@ import Image from 'next/image'
 import { SubmitButton } from '@/components/SubmitButton'
 import { MealTimeSelector } from '@/components/MealTimeSelector'
 import { WeatherSelector } from '@/components/WeatherSelector'
-import { Session, MealTime, WeatherType } from '@/types/session'
+import { NumberControl } from '@/components/NumberControl'
+import { Session, MealTime, WeatherType, DEFAULT_NUMBER_OF_PEOPLE, MIN_NUMBER_OF_PEOPLE } from '@/types/session'
 import { toast } from 'sonner'
 
 interface SessionFormProps {
@@ -50,6 +51,11 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
     initialData?.weather_types || []
   )
 
+  // Number of people state
+  const [numberOfPeople, setNumberOfPeople] = useState<number>(
+    initialData?.number_of_people ?? DEFAULT_NUMBER_OF_PEOPLE
+  )
+
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,6 +97,9 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
 
     // Append weather types as JSON string
     formData.append('weatherTypes', JSON.stringify(weatherTypes))
+
+    // Append number of people
+    formData.append('numberOfPeople', numberOfPeople.toString())
 
     formAction(formData)
   }
@@ -219,6 +228,18 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
               <span className="text-foreground/40 font-normal text-sm ml-2">(optional)</span>
             </label>
             <WeatherSelector value={weatherTypes} onChange={setWeatherTypes} />
+          </div>
+
+          {/* Number of People */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-foreground/80">
+              Number of People
+            </label>
+            <NumberControl
+              value={numberOfPeople}
+              onChange={setNumberOfPeople}
+              min={MIN_NUMBER_OF_PEOPLE}
+            />
           </div>
 
           {/* Images Custom Control */}
