@@ -66,13 +66,8 @@ export default function Onboarding() {
       const message = error instanceof Error ? error.message : 'Error setting up your profile!'
       toast.error(message)
       console.log(error)
-
-      // If profile update failed, cleanup the uploaded avatar to prevent orphans
-      if (avatar_url) {
-        console.log('[Onboarding] Cleaning up orphaned avatar:', avatar_url)
-        await deleteAvatar(avatar_url)
-        setAvatarUrl(null)
-      }
+      // Don't cleanup avatar on submission failure - user may retry with different username
+      // Avatar remains in state and storage for the next submission attempt
     } finally {
       setLoading(false)
     }
