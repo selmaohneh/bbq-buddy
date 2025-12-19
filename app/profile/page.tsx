@@ -25,10 +25,8 @@ export default function Profile() {
   }, [profile])
 
   async function updateProfile({
-    username,
     avatar_url,
   }: {
-    username: string | null
     avatar_url: string | null
   }): Promise<boolean> {
     try {
@@ -37,22 +35,18 @@ export default function Profile() {
 
       const updates = {
         id: session.user.id,
-        username,
         avatar_url,
         updated_at: new Date().toISOString(),
       }
 
       const { error } = await supabase.from('profiles').upsert(updates)
       if (error) {
-        if (error.code === '23505') { // Postgres unique_violation code
-            throw new Error('Username already taken.')
-        }
         throw error
       }
 
       // Update global context
       await refreshProfile()
-      toast.success('Profile updated!')
+      toast.success('Avatar updated!')
       return true
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error updating the data!'
@@ -96,7 +90,7 @@ export default function Profile() {
                 setAvatarUrl(newPath)
 
                 // Update the profile with the new avatar path
-                const success = await updateProfile({ username, avatar_url: newPath })
+                const success = await updateProfile({ avatar_url: newPath })
                 console.log('[Profile onUpload] updateProfile success:', success)
 
                 if (success) {
@@ -133,33 +127,24 @@ export default function Profile() {
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
-          <input 
-            id="email" 
-            type="text" 
-            value={session.user.email} 
-            disabled 
-            className="w-full p-2 border border-border rounded bg-input opacity-70 cursor-not-allowed" 
-          />
-        </div>
-        <div>
-          <label htmlFor="username" className="block text-sm font-medium mb-1">Username</label>
-          <input
-            id="username"
-            type="text"
-            value={username || ''}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2 border border-border rounded bg-card text-card-foreground"
-          />
+          <label htmlFor="username" className="block text-sm font-medium mb-1">
+            Username
+          </label>
+          <div className="w-full p-2 border border-border rounded bg-input opacity-70">
+            {username || 'Not set'}
+          </div>
+          <p className="text-xs text-foreground/60 mt-1">
+            Username cannot be changed after setup
+          </p>
         </div>
 
         <div className="flex flex-col gap-4">
             <button
             className="w-full p-2 text-white bg-[var(--primary)] rounded hover:opacity-90 disabled:opacity-50"
-            onClick={() => updateProfile({ username, avatar_url })}
+            onClick={() => updateProfile({ avatar_url })}
             disabled={loading}
             >
-            {loading ? 'Loading ...' : 'Update'}
+            {loading ? 'Updating...' : 'Update Avatar'}
             </button>
             
              <button
