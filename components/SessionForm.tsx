@@ -7,6 +7,7 @@ import { SubmitButton } from '@/components/SubmitButton'
 import { MealTimeSelector } from '@/components/MealTimeSelector'
 import { WeatherSelector } from '@/components/WeatherSelector'
 import { GrillTypeSelector } from '@/components/GrillTypeSelector'
+import { MeatTypeSelector } from '@/components/MeatTypeSelector'
 import { NumberControl } from '@/components/NumberControl'
 import { Session, MealTime, WeatherType, DEFAULT_NUMBER_OF_PEOPLE, MIN_NUMBER_OF_PEOPLE } from '@/types/session'
 import { toast } from 'sonner'
@@ -55,6 +56,11 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
   // Grill types state
   const [grillTypes, setGrillTypes] = useState<string[]>(
     initialData?.grill_types || []
+  )
+
+  // Meat types state
+  const [meatTypes, setMeatTypes] = useState<string[]>(
+    initialData?.meat_types || []
   )
 
   // Number of people state
@@ -106,6 +112,9 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
 
     // Append grill types as JSON string
     formData.append('grillTypes', JSON.stringify(grillTypes))
+
+    // Append meat types as JSON string
+    formData.append('meatTypes', JSON.stringify(meatTypes))
 
     // Append number of people
     formData.append('numberOfPeople', numberOfPeople.toString())
@@ -320,6 +329,14 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
               Grill Types
             </label>
             <GrillTypeSelector value={grillTypes} onChange={setGrillTypes} />
+          </div>
+
+          {/* Meat Types */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-foreground/80">
+              Meat Types
+            </label>
+            <MeatTypeSelector value={meatTypes} onChange={setMeatTypes} />
           </div>
 
           {/* Number of People */}

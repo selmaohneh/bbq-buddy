@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { WeatherTag } from '@/components/WeatherTag'
 import { GrillTypeTag } from '@/components/GrillTypeTag'
+import { MeatTypeTag } from '@/components/MeatTypeTag'
 import { PeopleCountTag } from '@/components/PeopleCountTag'
 
 interface SessionCardProps {
@@ -76,7 +77,7 @@ export function SessionCard({ session }: SessionCardProps) {
         </div>
 
         {/* Tags area */}
-        {(session.meal_time || (session.weather_types && session.weather_types.length > 0) || (session.grill_types && session.grill_types.length > 0)) && (
+        {(session.meal_time || (session.weather_types && session.weather_types.length > 0) || (session.grill_types && session.grill_types.length > 0) || (session.meat_types && session.meat_types.length > 0)) && (
           <div className="mt-auto pt-2 flex flex-wrap gap-2">
             {/* Meal Time Tag */}
             {session.meal_time && (
@@ -93,6 +94,11 @@ export function SessionCard({ session }: SessionCardProps) {
             {/* Grill Types Tags */}
             {session.grill_types?.map((type) => (
               <GrillTypeTag key={type} type={type} size="sm" showText={false} />
+            ))}
+
+            {/* Meat Types Tags */}
+            {session.meat_types?.map((type) => (
+              <MeatTypeTag key={type} type={type} size="sm" showText={false} />
             ))}
           </div>
         )}

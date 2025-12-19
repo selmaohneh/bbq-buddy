@@ -37,6 +37,23 @@ export const PREDEFINED_GRILL_TYPES: GrillTypeOption[] = [
   { value: 'Smoke', label: 'Smoke', icon: 'alarm-smoke' },
 ];
 
+// Meat Type Constants
+export type MeatType = 'Veggie' | 'Beef' | 'Pork' | 'Chicken' | 'Fish' | 'Other';
+
+export interface MeatTypeOption {
+  value: string;
+  label: string;
+  icon: string;
+}
+
+export const PREDEFINED_MEAT_TYPES: MeatTypeOption[] = [
+  { value: 'Veggie', label: 'Veggie', icon: 'carrot' },
+  { value: 'Beef', label: 'Beef', icon: 'beef' },
+  { value: 'Pork', label: 'Pork', icon: 'ham' },
+  { value: 'Chicken', label: 'Chicken', icon: 'drumstick' },
+  { value: 'Fish', label: 'Fish', icon: 'fish' },
+];
+
 // People counter constants
 export const DEFAULT_NUMBER_OF_PEOPLE = 1;
 export const MIN_NUMBER_OF_PEOPLE = 1;
@@ -49,6 +66,7 @@ export interface Session {
   meal_time: MealTime | null; // Optional meal time category
   weather_types: WeatherType[] | null; // Optional weather conditions (multi-select)
   grill_types: string[] | null; // Optional grill types (multi-select, including custom)
+  meat_types: string[] | null; // Optional meat types (multi-select, including custom)
   number_of_people: number; // Number of people fed (minimum 1)
   images: string[]; // URLs
   created_at: string;

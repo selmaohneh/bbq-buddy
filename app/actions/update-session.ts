@@ -45,6 +45,18 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
     }
   }
 
+  // Parse meat types
+  const meatTypesRaw = formData.get('meatTypes') as string
+  let meatTypes: string[] | null = null
+  if (meatTypesRaw) {
+    try {
+      const parsed = JSON.parse(meatTypesRaw)
+      meatTypes = Array.isArray(parsed) && parsed.length > 0 ? parsed : null
+    } catch (e) {
+      console.error('Failed to parse meat types:', e)
+    }
+  }
+
   // Parse number of people
   const numberOfPeopleRaw = formData.get('numberOfPeople') as string
   const numberOfPeople = numberOfPeopleRaw ? parseInt(numberOfPeopleRaw, 10) : 1
@@ -122,6 +134,7 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
         meal_time: mealTime,
         weather_types: weatherTypes,
         grill_types: grillTypes,
+        meat_types: meatTypes,
         number_of_people: numberOfPeople,
         images: updatedImageUrls,
       })
