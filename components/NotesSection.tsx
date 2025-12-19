@@ -50,17 +50,15 @@ export function NotesSection({ value, onChange }: NotesSectionProps) {
         className="w-full text-left group"
       >
         <div className={`
-          p-4 rounded-xl border border-dashed transition-all duration-200
+          p-4 rounded-xl border-2 border-dashed transition-all duration-200 flex items-center justify-center gap-2
           ${value 
-            ? 'bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100' 
-            : 'bg-slate-50/50 border-slate-300 text-slate-400 hover:border-slate-400 hover:text-slate-500'
+            ? 'bg-foreground/5 border-foreground/20 text-foreground/80 hover:border-primary hover:bg-foreground/10' 
+            : 'bg-transparent border-foreground/20 text-foreground/60 hover:border-primary hover:text-primary'
           }
         `}>
-          <div className="flex items-start gap-3">
-             <FileText className={`w-5 h-5 mt-0.5 shrink-0 ${value ? 'text-slate-500' : 'opacity-50'}`} />
-             <div className="flex-1 whitespace-pre-wrap font-medium">
-               {value || 'Add any notes about your session...'}
-             </div>
+          <FileText className="w-6 h-6 shrink-0" />
+          <div className="flex-1 whitespace-pre-wrap break-words overflow-hidden font-medium">
+            {value || 'Add any notes about your session...'}
           </div>
         </div>
       </button>
