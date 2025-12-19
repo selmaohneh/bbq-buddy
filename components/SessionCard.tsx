@@ -87,12 +87,12 @@ export function SessionCard({ session }: SessionCardProps) {
 
             {/* Weather Tags */}
             {session.weather_types?.map((weather) => (
-              <WeatherTag key={weather} weather={weather} size="sm" />
+              <WeatherTag key={weather} weather={weather} size="sm" showText={false} />
             ))}
 
             {/* Grill Types Tags */}
             {session.grill_types?.map((type) => (
-              <GrillTypeTag key={type} type={type} size="sm" />
+              <GrillTypeTag key={type} type={type} size="sm" showText={false} />
             ))}
           </div>
         )}

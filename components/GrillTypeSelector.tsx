@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { PREDEFINED_GRILL_TYPES } from '@/types/session'
-import { Flame, Fuel, Trees, Zap, CloudFog, MoreHorizontal, X } from 'lucide-react'
+import { Gem, Fuel, Trees, Zap, AlarmSmoke, MoreHorizontal, X } from 'lucide-react'
 
 interface GrillTypeSelectorProps {
   value: string[] | null
@@ -10,11 +10,11 @@ interface GrillTypeSelectorProps {
 }
 
 const ICONS: Record<string, any> = {
-  Coal: Flame,
+  Coal: Gem,
   Gas: Fuel,
   Wood: Trees,
   Electric: Zap,
-  Smoke: CloudFog,
+  Smoke: AlarmSmoke,
 }
 
 export function GrillTypeSelector({ value, onChange }: GrillTypeSelectorProps) {

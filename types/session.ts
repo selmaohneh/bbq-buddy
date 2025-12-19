@@ -30,11 +30,11 @@ export interface GrillTypeOption {
 }
 
 export const PREDEFINED_GRILL_TYPES: GrillTypeOption[] = [
-  { value: 'Coal', label: 'Coal', icon: 'flame' },
+  { value: 'Coal', label: 'Coal', icon: 'rock' },
   { value: 'Gas', label: 'Gas', icon: 'fuel' },
   { value: 'Wood', label: 'Wood', icon: 'logs' }, // using 'logs' placeholder, will map to TreePine or something
   { value: 'Electric', label: 'Electric', icon: 'zap' },
-  { value: 'Smoke', label: 'Smoke', icon: 'cloud-fog' },
+  { value: 'Smoke', label: 'Smoke', icon: 'alarm-smoke' },
 ];
 
 // People counter constants
