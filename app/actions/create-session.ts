@@ -73,6 +73,14 @@ export async function createSession(prevState: any, formData: FormData) {
     return { message: 'Title and Date are required' }
   }
 
+  // Validate date is not in the future
+  const selectedDate = new Date(date)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  if (selectedDate > today) {
+    return { message: 'Date cannot be in the future' }
+  }
+
   const imageUrls: string[] = []
 
   try {

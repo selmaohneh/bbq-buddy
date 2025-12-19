@@ -45,6 +45,8 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
     initialData?.date || new Date().toISOString().split('T')[0]
   )
 
+  const today = new Date().toISOString().split('T')[0]
+
   // Meal time state
   const [mealTime, setMealTime] = useState<MealTime | null>(initialData?.meal_time || null)
 
@@ -219,6 +221,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
                 name="date"
                 required
                 value={date}
+                max={today}
                 onChange={(e) => setDate(e.target.value)}
                 className="absolute inset-0 opacity-0 pointer-events-none"
               />
