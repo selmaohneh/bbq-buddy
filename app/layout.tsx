@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 import SupabaseProvider from "./supabase-provider";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import { ProfileProvider } from "@/components/ProfileProvider";
 import { ClientToaster } from "@/components/ClientToaster";
 
@@ -50,18 +49,11 @@ export default function RootLayout({
       >
         <SupabaseProvider>
           <ProfileProvider>
-            <ThemeProvider
-              attribute="data-theme"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Navbar />
-              <main className="flex flex-col items-center min-h-screen">
-                {children}
-              </main>
-              <ClientToaster />
-            </ThemeProvider>
+            <Navbar />
+            <main className="flex flex-col items-center min-h-screen">
+              {children}
+            </main>
+            <ClientToaster />
           </ProfileProvider>
         </SupabaseProvider>
       </body>
