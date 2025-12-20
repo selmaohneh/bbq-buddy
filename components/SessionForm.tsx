@@ -32,12 +32,15 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
   // State for existing images (URLs from initial data)
   const [existingImages, setExistingImages] = useState<string[]>(initialData?.images || [])
 
-  // State for newly uploaded images (URLs uploaded to Supabase Storage)
-  const [newImageUrls, setNewImageUrls] = useState<string[]>([])
+  // State for new images to upload (compressed File objects + preview URLs)
+  const [newFiles, setNewFiles] = useState<File[]>([])
+  const [newFilePreviews, setNewFilePreviews] = useState<string[]>([])
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const dateInputRef = useRef<HTMLInputElement>(null)
-  
+
+  const [isUploading, setIsUploading] = useState(false)
+
   // Date state
   const [date, setDate] = useState(
     initialData?.date || new Date().toISOString().split('T')[0]
@@ -134,7 +137,6 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       setIsCompressing(true)
-      toast.info('Compressing and uploading images...')
 
       try {
         const files = Array.from(event.target.files)
@@ -144,45 +146,15 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
           files.map((file) => compressImage(file))
         )
 
-        // Get current user
-        const { data: { user } } = await supabase.auth.getUser()
+        // Create local blob URLs for preview
+        const previews = compressedFiles.map((file) => URL.createObjectURL(file))
 
-        if (!user) {
-          toast.error('You must be logged in to upload images')
-          setIsCompressing(false)
-          return
-        }
-
-        // Upload compressed images directly to Supabase Storage
-        const uploadedUrls: string[] = []
-
-        for (const file of compressedFiles) {
-          const fileExt = file.name.split('.').pop()
-          const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-
-          const { error: uploadError } = await supabase.storage
-            .from('session-images')
-            .upload(fileName, file)
-
-          if (uploadError) {
-            console.error('Upload error:', uploadError)
-            toast.error(`Failed to upload ${file.name}`)
-          } else {
-            const { data: { publicUrl } } = supabase.storage
-              .from('session-images')
-              .getPublicUrl(fileName)
-
-            uploadedUrls.push(publicUrl)
-          }
-        }
-
-        if (uploadedUrls.length > 0) {
-          setNewImageUrls((prev) => [...prev, ...uploadedUrls])
-          toast.success(`${uploadedUrls.length} image(s) uploaded successfully`)
-        }
+        // Store compressed files and previews (will upload on submit)
+        setNewFiles((prev) => [...prev, ...compressedFiles])
+        setNewFilePreviews((prev) => [...prev, ...previews])
       } catch (error) {
-        console.error('Image upload failed:', error)
-        toast.error('Failed to upload images')
+        console.error('Image compression failed:', error)
+        toast.error('Failed to process images')
       } finally {
         setIsCompressing(false)
       }
@@ -192,35 +164,72 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
     }
   }
 
-  const removeNewImage = async (index: number) => {
-    const urlToRemove = newImageUrls[index]
-
-    // Delete from Supabase Storage
-    try {
-      const urlObj = new URL(urlToRemove)
-      const parts = urlObj.pathname.split('/session-images/')
-      const filePath = parts.length > 1 ? decodeURIComponent(parts[1]) : null
-
-      if (filePath) {
-        await supabase.storage.from('session-images').remove([filePath])
-      }
-    } catch (error) {
-      console.error('Failed to delete image from storage:', error)
-    }
+  const removeNewFile = (index: number) => {
+    // Revoke blob URL to free memory
+    URL.revokeObjectURL(newFilePreviews[index])
 
     // Remove from state
-    setNewImageUrls((prev) => prev.filter((_, i) => i !== index))
+    setNewFiles((prev) => prev.filter((_, i) => i !== index))
+    setNewFilePreviews((prev) => prev.filter((_, i) => i !== index))
   }
 
   const removeExistingImage = (index: number) => {
     setExistingImages((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const clientAction = (formData: FormData) => {
-    // Append new image URLs (already uploaded to Supabase Storage)
-    newImageUrls.forEach((url) => {
-      formData.append('newImageUrls', url)
-    })
+  const clientAction = async (formData: FormData) => {
+    if (newFiles.length > 0) {
+      setIsUploading(true)
+
+      try {
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+          toast.error('You must be logged in to upload images')
+          setIsUploading(false)
+          return
+        }
+
+        // Upload all new images to Supabase Storage
+        const uploadedUrls: string[] = []
+
+        for (let i = 0; i < newFiles.length; i++) {
+          const file = newFiles[i]
+          const fileExt = file.name.split('.').pop()
+          const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+
+          const { error: uploadError } = await supabase.storage
+            .from('session-images')
+            .upload(fileName, file)
+
+          if (uploadError) {
+            console.error('Upload error:', uploadError)
+            toast.error(`Failed to upload image ${i + 1}`)
+            setIsUploading(false)
+            return
+          }
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('session-images')
+            .getPublicUrl(fileName)
+
+          uploadedUrls.push(publicUrl)
+        }
+
+        // Append uploaded image URLs
+        uploadedUrls.forEach((url) => {
+          formData.append('newImageUrls', url)
+        })
+      } catch (error) {
+        console.error('Upload failed:', error)
+        toast.error('Failed to upload images')
+        setIsUploading(false)
+        return
+      }
+
+      setIsUploading(false)
+    }
 
     // Append list of existing images to keep
     existingImages.forEach((url) => {
@@ -251,7 +260,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
   const handleDelete = async () => {
     if (!deleteAction || !initialData) return
     if (!confirm('Are you sure you want to delete this session? This cannot be undone.')) return
-    
+
     setIsDeleting(true)
     try {
         // Pass all initial images to ensure we clean up everything on delete
@@ -396,7 +405,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
             </button>
 
             {/* Preview Grid */}
-            {(existingImages.length > 0 || newImageUrls.length > 0) && (
+            {(existingImages.length > 0 || newFilePreviews.length > 0) && (
               <div className="grid grid-cols-3 gap-2 mt-2">
                 {/* Existing Images */}
                 {existingImages.map((url, index) => (
@@ -419,8 +428,8 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
                   </div>
                 ))}
 
-                {/* New Uploaded Images */}
-                {newImageUrls.map((url, index) => (
+                {/* New Files (Local Previews) */}
+                {newFilePreviews.map((url, index) => (
                   <div key={url} className="relative aspect-square rounded-lg overflow-hidden group bg-input">
                     <Image
                       src={url}
@@ -431,7 +440,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
                      <div className="absolute bottom-1 left-1 bg-green-500/80 text-white text-[10px] px-1 rounded">New</div>
                     <button
                       type="button"
-                      onClick={() => removeNewImage(index)}
+                      onClick={() => removeNewFile(index)}
                       className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-red-500 transition-colors"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
@@ -496,7 +505,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
             <NotesSection value={notes} onChange={setNotes} />
           </div>
 
-          <SubmitButton />
+          <SubmitButton isUploading={isUploading} />
         </form>
       </main>
     </div>
