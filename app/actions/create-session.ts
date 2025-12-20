@@ -69,7 +69,8 @@ export async function createSession(prevState: any, formData: FormData) {
 
   const notes = formData.get('notes') as string
 
-  const newImages = formData.getAll('newImages') as File[]
+  // Get image URLs that were already uploaded from the client
+  const newImageUrls = formData.getAll('newImageUrls') as string[]
 
   if (!title || !date) {
     return { message: 'Title and Date are required' }
@@ -83,30 +84,8 @@ export async function createSession(prevState: any, formData: FormData) {
     return { message: 'Date cannot be in the future' }
   }
 
-  const imageUrls: string[] = []
-
   try {
-    // 3. Upload Images
-    const validImages = newImages.filter((img) => img.size > 0 && img.name !== 'undefined')
-
-    for (const file of validImages) {
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-      
-      const { error: uploadError } = await supabase.storage
-        .from('session-images')
-        .upload(fileName, file)
-
-      if (uploadError) {
-        console.error('Upload error:', uploadError)
-      } else {
-        const { data: { publicUrl } } = supabase.storage
-          .from('session-images')
-          .getPublicUrl(fileName)
-        
-        imageUrls.push(publicUrl)
-      }
-    }
+    // Images are already uploaded from the client, just use the URLs
 
     // 3.5 Ensure Profile Exists (Self-healing)
     // If the user profile is missing (e.g. old user), creating a session will fail.
@@ -114,7 +93,7 @@ export async function createSession(prevState: any, formData: FormData) {
     const { error: profileError } = await supabase
         .from('profiles')
         .upsert({ id: user.id }, { onConflict: 'id', ignoreDuplicates: true })
-    
+
     if (profileError) {
         console.warn('Could not verify profile existence:', profileError)
         // We continue anyway, hoping for the best, or the insert below will fail specificially.
@@ -133,19 +112,19 @@ export async function createSession(prevState: any, formData: FormData) {
         meat_types: meatTypes,
         number_of_people: numberOfPeople,
         notes,
-        images: imageUrls,
+        images: newImageUrls,
       })
 
     if (insertError) {
       console.error('Insert error details:', JSON.stringify(insertError, null, 2))
-      
+
       // Cleanup: Delete uploaded images since session creation failed
-      if (imageUrls.length > 0) {
-        const pathsToRemove = imageUrls.map(url => {
+      if (newImageUrls.length > 0) {
+        const pathsToRemove = newImageUrls.map(url => {
             try {
                 const urlObj = new URL(url)
                 const parts = urlObj.pathname.split('/session-images/')
-                return parts.length > 1 ? parts[1] : null
+                return parts.length > 1 ? decodeURIComponent(parts[1]) : null
             } catch (e) { return null }
         }).filter(Boolean) as string[]
 

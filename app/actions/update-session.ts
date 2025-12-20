@@ -68,7 +68,8 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
 
   const notes = formData.get('notes') as string
 
-  const newImages = formData.getAll('newImages') as File[]
+  // Get image URLs that were already uploaded from the client
+  const newImageUrls = formData.getAll('newImageUrls') as string[]
   const keptImages = formData.getAll('keptImages') as string[]
 
   if (!title || !date) {
@@ -110,30 +111,11 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
     }
   }
 
-  let updatedImageUrls = [...keptImages]
+  // Combine kept images and new uploaded images
+  const updatedImageUrls = [...keptImages, ...newImageUrls]
 
   try {
-    // 2. Upload New Images
-    const validNewImages = newImages.filter((img) => img.size > 0 && img.name !== 'undefined')
-
-    for (const file of validNewImages) {
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-      
-      const { error: uploadError } = await supabase.storage
-        .from('session-images')
-        .upload(fileName, file)
-
-      if (uploadError) {
-        console.error('Upload error:', uploadError)
-      } else {
-        const { data: { publicUrl } } = supabase.storage
-          .from('session-images')
-          .getPublicUrl(fileName)
-        
-        updatedImageUrls.push(publicUrl)
-      }
-    }
+    // Images are already uploaded from the client, just combine the URLs
 
     // 3. Update Session
     const { error: updateError } = await supabase
