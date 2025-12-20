@@ -70,15 +70,14 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-[var(--background)] text-[var(--foreground)]">
-      <div className="w-full max-w-md p-8 space-y-8 bg-card text-card-foreground rounded shadow-md border border-border">
-        <h1 className="text-2xl font-bold text-center">Profile</h1>
-
-        <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center min-h-screen py-8 px-4 bg-[var(--background)] text-[var(--foreground)]">
+      {/* Profile Header - Narrower */}
+      <div className="w-full max-w-md mb-8">
+        <div className="flex flex-col items-center gap-4 bg-card p-6 rounded-2xl border border-border shadow-sm">
           <Avatar
             uid={session.user.id}
             url={avatar_url}
-            size={150}
+            size={120}
             onUpload={async (newPath, oldPath) => {
               console.log('[Profile onUpload] Called with newPath:', newPath, 'oldPath:', oldPath)
 
@@ -113,15 +112,23 @@ export default function Profile() {
             }}
           />
           {username && (
-            <p className="text-sm text-foreground/80">@{username}</p>
+            <div className="text-center">
+              <p className="text-lg font-semibold text-foreground">{username}</p>
+              <p className="text-sm text-foreground/60">@{username}</p>
+            </div>
           )}
         </div>
+      </div>
 
-        {/* BBQ Statistics Section */}
+      {/* BBQ Statistics Section - Wider */}
+      <div className="w-full max-w-2xl px-4">
         <StatsSection />
+      </div>
 
+      {/* Sign Out Button - Centered */}
+      <div className="w-full max-w-md px-4 mt-8">
         <button
-          className="w-full p-2 text-white bg-gray-500 rounded hover:bg-gray-600"
+          className="w-full p-3 text-white bg-foreground/10 hover:bg-foreground/20 rounded-xl font-medium transition-colors"
           onClick={handleSignOut}
         >
           Sign Out
