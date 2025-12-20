@@ -75,14 +75,90 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
   const [notes, setNotes] = useState<string>(initialData?.notes || '')
 
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isCompressing, setIsCompressing] = useState(false)
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = async (file: File): Promise<File> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = (event) => {
+        const img = document.createElement('img')
+        img.src = event.target?.result as string
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')!
+
+          // Max dimensions (larger to preserve quality while reducing size)
+          const MAX_WIDTH = 1920
+          const MAX_HEIGHT = 1920
+
+          let width = img.width
+          let height = img.height
+
+          // Calculate new dimensions while maintaining aspect ratio
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = (height * MAX_WIDTH) / width
+              width = MAX_WIDTH
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = (width * MAX_HEIGHT) / height
+              height = MAX_HEIGHT
+            }
+          }
+
+          canvas.width = width
+          canvas.height = height
+
+          // Draw and compress
+          ctx.drawImage(img, 0, 0, width, height)
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                })
+                resolve(compressedFile)
+              } else {
+                resolve(file)
+              }
+            },
+            'image/jpeg',
+            0.85
+          )
+        }
+      }
+    })
+  }
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      const files = Array.from(event.target.files)
-      setNewFiles((prev) => [...prev, ...files])
-      
-      const previews = files.map((file) => URL.createObjectURL(file))
-      setNewFilePreviews((prev) => [...prev, ...previews])
+      setIsCompressing(true)
+      toast.info('Compressing images...')
+
+      try {
+        const files = Array.from(event.target.files)
+
+        // Compress all images
+        const compressedFiles = await Promise.all(
+          files.map((file) => compressImage(file))
+        )
+
+        setNewFiles((prev) => [...prev, ...compressedFiles])
+
+        const previews = compressedFiles.map((file) => URL.createObjectURL(file))
+        setNewFilePreviews((prev) => [...prev, ...previews])
+
+        toast.success(`${files.length} image(s) compressed and ready`)
+      } catch (error) {
+        console.error('Image compression failed:', error)
+        toast.error('Failed to compress images')
+      } finally {
+        setIsCompressing(false)
+      }
     }
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
@@ -260,12 +336,22 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full py-4 border-2 border-dashed border-foreground/20 rounded-xl text-foreground/60 hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2"
+              disabled={isCompressing}
+              className="w-full py-4 border-2 border-dashed border-foreground/20 rounded-xl text-foreground/60 hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-foreground/20 disabled:hover:text-foreground/60"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-              </svg>
-              Select Photos
+              {isCompressing ? (
+                <>
+                  <span className="animate-spin block w-5 h-5 border-2 border-current border-t-transparent rounded-full" />
+                  Compressing...
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                  </svg>
+                  Select Photos
+                </>
+              )}
             </button>
 
             {/* Preview Grid */}
