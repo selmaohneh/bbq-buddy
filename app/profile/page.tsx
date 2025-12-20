@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useProfile } from '@/components/ProfileProvider'
 import { toast } from 'sonner'
 import { deleteAvatar } from '@/app/actions/delete-avatar'
+import { StatsSection } from '@/components/StatsSection'
 
 export default function Profile() {
   const { supabase, session } = useSupabase()
@@ -115,6 +116,9 @@ export default function Profile() {
             <p className="text-sm text-foreground/80">@{username}</p>
           )}
         </div>
+
+        {/* BBQ Statistics Section */}
+        <StatsSection />
 
         <button
           className="w-full p-2 text-white bg-gray-500 rounded hover:bg-gray-600"
