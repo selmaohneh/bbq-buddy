@@ -1,10 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Calendar, CalendarDays, CalendarClock } from 'lucide-react'
+import { Flame, Calendar } from 'lucide-react'
 import { BBQStatistics } from '@/types/statistics'
-import { HeroStatCard } from './HeroStatCard'
-import { CompactStatCard } from './CompactStatCard'
 import { StatsEmptyState } from './StatsEmptyState'
 import { getStatistics } from '@/app/actions/get-statistics'
 
@@ -12,8 +10,8 @@ import { getStatistics } from '@/app/actions/get-statistics'
  * StatsSection Component
  *
  * Fetches and displays BBQ statistics for the current user.
+ * Shows total sessions and grill days this year in a two-column grid.
  * Handles loading, empty, and populated states.
- * Uses the server action to fetch data on the client side.
  */
 export function StatsSection() {
   const [stats, setStats] = useState<BBQStatistics | null>(null)
@@ -29,8 +27,6 @@ export function StatsSection() {
         setStats({
           totalSessions: 0,
           daysThisYear: 0,
-          daysThisMonth: 0,
-          daysThisWeek: 0,
         })
       } finally {
         setIsLoading(false)
@@ -42,46 +38,52 @@ export function StatsSection() {
 
   // Show empty state if no sessions
   if (!isLoading && stats && stats.totalSessions === 0) {
-    return (
-      <section className="mt-8" aria-label="BBQ Statistics">
-        <StatsEmptyState />
-      </section>
-    )
+    return <StatsEmptyState />
   }
 
   return (
-    <section className="mt-8" aria-label="BBQ Statistics">
-      {/* Hero Stat: Total BBQ Sessions */}
-      <HeroStatCard
-        value={stats?.totalSessions || 0}
-        loading={isLoading}
-      />
-
-      {/* Time-based Stats Row */}
-      <div className="flex gap-3">
-        <CompactStatCard
-          icon={Calendar}
-          value={stats?.daysThisYear || 0}
-          label="Days This Year"
-          hint="Start grilling!"
-          loading={isLoading}
-        />
-        <CompactStatCard
-          icon={CalendarDays}
-          value={stats?.daysThisMonth || 0}
-          label="Days This Month"
-          hint="Fire it up!"
-          loading={isLoading}
-        />
-        <CompactStatCard
-          icon={CalendarClock}
-          value={stats?.daysThisWeek || 0}
-          label="Days This Week"
-          hint="Time to BBQ!"
-          loading={isLoading}
-        />
+    <div className="grid grid-cols-2 gap-4">
+      {/* Total Sessions Stat */}
+      <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-4 flex flex-col items-center gap-2">
+        {isLoading ? (
+          <>
+            <div className="w-6 h-6 bg-foreground/10 rounded animate-pulse" />
+            <div className="w-16 h-10 bg-foreground/10 rounded animate-pulse" />
+            <div className="w-24 h-4 bg-foreground/10 rounded animate-pulse" />
+          </>
+        ) : (
+          <>
+            <Flame className="w-6 h-6 text-primary" />
+            <div className="text-4xl font-bold text-foreground tabular-nums">
+              {stats?.totalSessions || 0}
+            </div>
+            <div className="text-sm text-foreground/60 font-medium text-center">
+              Total Sessions
+            </div>
+          </>
+        )}
       </div>
-    </section>
+
+      {/* Days This Year Stat */}
+      <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-4 flex flex-col items-center gap-2">
+        {isLoading ? (
+          <>
+            <div className="w-6 h-6 bg-foreground/10 rounded animate-pulse" />
+            <div className="w-16 h-10 bg-foreground/10 rounded animate-pulse" />
+            <div className="w-24 h-4 bg-foreground/10 rounded animate-pulse" />
+          </>
+        ) : (
+          <>
+            <Calendar className="w-6 h-6 text-primary" />
+            <div className="text-4xl font-bold text-foreground tabular-nums">
+              {stats?.daysThisYear || 0}
+            </div>
+            <div className="text-sm text-foreground/60 font-medium text-center">
+              Days This Year
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   )
 }
-

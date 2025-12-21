@@ -13,18 +13,12 @@ export interface BBQStatistics {
 
   /** Number of unique calendar days with sessions in current year */
   daysThisYear: number
-
-  /** Number of unique calendar days with sessions in current month */
-  daysThisMonth: number
-
-  /** Number of unique calendar days with sessions in current week (Mon-Sun) */
-  daysThisWeek: number
 }
 
 /**
  * Stat type identifier for info modals
  */
-export type StatType = 'total' | 'year' | 'month' | 'week' | null
+export type StatType = 'total' | 'year' | null
 
 /**
  * Info modal content structure
@@ -46,14 +40,6 @@ export const STAT_INFO: Record<Exclude<StatType, null>, StatInfo> = {
     title: 'Days Grilled This Year',
     description: 'This counts the number of unique days you\'ve grilled in the current calendar year (Jan 1 - Dec 31). If you grill multiple times in one day, it still counts as a single day. This metric resets to zero at the start of each year.',
   },
-  month: {
-    title: 'Days Grilled This Month',
-    description: 'This counts the number of unique days you\'ve grilled in the current calendar month. Multiple BBQ sessions on the same day count as just one day. This metric resets to zero at the beginning of each month.',
-  },
-  week: {
-    title: 'Days Grilled This Week',
-    description: 'This counts the number of unique days you\'ve grilled in the current week (Monday through Sunday). Even if you have multiple BBQ sessions in a single day, it only counts as one day. This metric resets every Monday.',
-  },
 }
 
 /**
@@ -62,8 +48,6 @@ export const STAT_INFO: Record<Exclude<StatType, null>, StatInfo> = {
 export const STAT_ICONS = {
   total: 'flame',
   year: 'calendar',
-  month: 'calendar-days',
-  week: 'calendar-clock',
 } as const
 
 /**
@@ -72,6 +56,4 @@ export const STAT_ICONS = {
 export const EMPTY_HINTS = {
   total: '',
   year: 'Make this year count!',
-  month: 'New month, new BBQs!',
-  week: 'Time to fire up the grill!',
 } as const

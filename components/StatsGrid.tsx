@@ -14,7 +14,7 @@ interface StatsGridProps {
  * StatsGrid Component
  *
  * Displays a responsive grid of BBQ statistic cards.
- * Shows 2x2 grid on desktop, stacked vertically on mobile.
+ * Shows 2 columns on desktop, stacked vertically on mobile.
  * Manages the info modal state for showing stat explanations.
  */
 export function StatsGrid({ stats }: StatsGridProps) {
@@ -47,20 +47,6 @@ export function StatsGrid({ stats }: StatsGridProps) {
           value={stats.daysThisYear}
           label="Days Grilled This Year"
           statType="year"
-          onInfoClick={handleInfoClick}
-        />
-        <StatCard
-          icon={STAT_ICONS.month}
-          value={stats.daysThisMonth}
-          label="Days Grilled This Month"
-          statType="month"
-          onInfoClick={handleInfoClick}
-        />
-        <StatCard
-          icon={STAT_ICONS.week}
-          value={stats.daysThisWeek}
-          label="Days Grilled This Week"
-          statType="week"
           onInfoClick={handleInfoClick}
         />
       </div>

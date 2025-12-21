@@ -9,7 +9,7 @@ import { Flame } from 'lucide-react'
  */
 export function StatsEmptyState() {
   return (
-    <div className="bg-card border border-border rounded-2xl p-8 text-center shadow-sm">
+    <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-8 text-center">
       {/* Muted grill icon */}
       <div className="flex justify-center mb-4">
         <Flame size={48} className="text-foreground/20" />

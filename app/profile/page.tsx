@@ -61,19 +61,18 @@ export default function Profile() {
   }
 
   if (!session) {
-      return (
-        <div className="flex justify-center items-center min-h-screen">
-            <p>Redirecting...</p> 
-            {/* Or Loading spinner */}
-        </div>
-      )
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>Redirecting...</p>
+      </div>
+    )
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen py-8 px-4 bg-[var(--background)] text-[var(--foreground)]">
-      {/* Profile Header - Narrower */}
-      <div className="w-full max-w-md mb-8">
-        <div className="flex flex-col items-center gap-4 bg-card p-6 rounded-2xl border border-border shadow-sm">
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-1 p-6 max-w-md mx-auto w-full flex flex-col gap-6">
+        {/* Avatar Section */}
+        <div className="flex flex-col items-center gap-3">
           <Avatar
             uid={session.user.id}
             url={avatar_url}
@@ -112,28 +111,21 @@ export default function Profile() {
             }}
           />
           {username && (
-            <div className="text-center">
-              <p className="text-lg font-semibold text-foreground">{username}</p>
-              <p className="text-sm text-foreground/60">@{username}</p>
-            </div>
+            <p className="text-lg text-foreground">@{username}</p>
           )}
         </div>
-      </div>
 
-      {/* BBQ Statistics Section - Wider */}
-      <div className="w-full max-w-2xl px-4">
+        {/* Stats Section */}
         <StatsSection />
-      </div>
 
-      {/* Sign Out Button - Centered */}
-      <div className="w-full max-w-md px-4 mt-8">
+        {/* Sign Out Button */}
         <button
-          className="w-full p-3 text-white bg-foreground/10 hover:bg-foreground/20 rounded-xl font-medium transition-colors"
+          className="mt-auto w-full p-3 text-white bg-foreground/10 hover:bg-foreground/20 rounded-xl font-medium transition-colors"
           onClick={handleSignOut}
         >
           Sign Out
         </button>
-      </div>
+      </main>
     </div>
   )
 }
