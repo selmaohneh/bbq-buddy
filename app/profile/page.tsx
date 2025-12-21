@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useSupabase } from '@/app/supabase-provider'
 import Avatar from '@/components/Avatar'
-import { useRouter } from 'next/navigation'
 import { useProfile } from '@/components/ProfileProvider'
 import { toast } from 'sonner'
 import { deleteAvatar } from '@/app/actions/delete-avatar'
@@ -12,7 +11,6 @@ import { StatsSection } from '@/components/StatsSection'
 export default function Profile() {
   const { supabase, session } = useSupabase()
   const { profile, refreshProfile } = useProfile()
-  const router = useRouter()
   const [username, setUsername] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
 
@@ -52,12 +50,6 @@ export default function Profile() {
       console.log(error)
       return false
     }
-  }
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.refresh()
-    router.push('/login')
   }
 
   if (!session) {
@@ -117,14 +109,6 @@ export default function Profile() {
 
         {/* Stats Section */}
         <StatsSection />
-
-        {/* Sign Out Button */}
-        <button
-          className="mt-auto w-full p-3 text-white bg-foreground/10 hover:bg-foreground/20 rounded-xl font-medium transition-colors"
-          onClick={handleSignOut}
-        >
-          Sign Out
-        </button>
       </main>
     </div>
   )
