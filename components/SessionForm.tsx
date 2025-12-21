@@ -1,7 +1,6 @@
 'use client'
 
 import { useActionState, useRef, useState } from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
 import { Camera, Image as ImageIcon } from 'lucide-react'
 import { SubmitButton } from '@/components/SubmitButton'
@@ -280,19 +279,14 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <header className="p-4 border-b border-foreground/10 flex items-center gap-4 bg-background sticky top-0 z-10">
-        <Link href="/" className="text-primary hover:opacity-80">
-           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
-        </Link>
+      <header className="p-4 border-b border-foreground/10 flex items-center bg-background sticky top-0 z-10">
         <h1 className="text-xl font-bold">
             {initialData ? 'Edit Session' : 'New Session'}
         </h1>
-        
+
         {initialData && deleteAction && (
-             <button 
-                type="button" 
+             <button
+                type="button"
                 onClick={handleDelete}
                 disabled={isDeleting}
                 className="ml-auto text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors"
