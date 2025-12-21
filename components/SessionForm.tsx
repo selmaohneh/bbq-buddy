@@ -39,7 +39,6 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
-  const dateInputRef = useRef<HTMLInputElement>(null)
 
   const [isUploading, setIsUploading] = useState(false)
 
@@ -341,31 +340,18 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
             <label htmlFor="date" className="font-semibold text-foreground/80">
               Date
             </label>
-            {/* Clickable display container */}
-            <div
-              onClick={() => dateInputRef.current?.click()}
-              className="relative w-full p-4 rounded-xl bg-foreground/5 border border-foreground/10 hover:border-primary focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 outline-none transition-all cursor-pointer flex items-center justify-between"
-            >
-              {/* Display yyyy-MM-dd format */}
-              <span className="text-foreground">
-                {date || 'yyyy-MM-dd'}
-              </span>
-              {/* Calendar icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-foreground/40">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-              </svg>
-            </div>
-            {/* Hidden native date input */}
             <input
               type="date"
               id="date"
               name="date"
-              ref={dateInputRef}
               required
               value={date}
               max={today}
               onChange={(e) => setDate(e.target.value)}
-              className="sr-only"
+              style={{
+                colorScheme: 'dark',
+              }}
+              className="w-full p-4 rounded-xl bg-foreground/5 border border-foreground/10 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100"
             />
           </div>
 
