@@ -27,12 +27,5 @@ export default function AuthButton() {
     return null
   }
 
-  return (
-    <Link
-      href="/login"
-      className="text-sm bg-white text-primary hover:bg-white/90 py-2 px-4 rounded-md font-medium transition-colors"
-    >
-      Login
-    </Link>
-  )
+  return null
 }
