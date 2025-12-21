@@ -61,24 +61,22 @@ export default function Profile() {
   }
 
   if (!session) {
-      return (
-        <div className="flex justify-center items-center min-h-screen">
-            <p>Redirecting...</p> 
-            {/* Or Loading spinner */}
-        </div>
-      )
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>Redirecting...</p>
+      </div>
+    )
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-[var(--background)] text-[var(--foreground)]">
-      <div className="w-full max-w-md p-8 space-y-8 bg-card text-card-foreground rounded shadow-md border border-border">
-        <h1 className="text-2xl font-bold text-center">Profile</h1>
-
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-1 p-6 max-w-md mx-auto w-full flex flex-col gap-6">
+        {/* Avatar Section */}
         <div className="flex flex-col items-center gap-3">
           <Avatar
             uid={session.user.id}
             url={avatar_url}
-            size={150}
+            size={120}
             onUpload={async (newPath, oldPath) => {
               console.log('[Profile onUpload] Called with newPath:', newPath, 'oldPath:', oldPath)
 
@@ -113,20 +111,21 @@ export default function Profile() {
             }}
           />
           {username && (
-            <p className="text-sm text-foreground/80">@{username}</p>
+            <p className="text-lg text-foreground">@{username}</p>
           )}
         </div>
 
-        {/* BBQ Statistics Section */}
+        {/* Stats Section */}
         <StatsSection />
 
+        {/* Sign Out Button */}
         <button
-          className="w-full p-2 text-white bg-gray-500 rounded hover:bg-gray-600"
+          className="mt-auto w-full p-3 text-white bg-foreground/10 hover:bg-foreground/20 rounded-xl font-medium transition-colors"
           onClick={handleSignOut}
         >
           Sign Out
         </button>
-      </div>
+      </main>
     </div>
   )
 }
