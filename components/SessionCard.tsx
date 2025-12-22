@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Session } from '@/types/session'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -17,6 +17,8 @@ interface SessionCardProps {
 export function SessionCard({ session }: SessionCardProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [currentScrollIndex, setCurrentScrollIndex] = useState(0)
   const mainImage = session.images?.[0]
   const additionalImagesCount = (session.images?.length || 0) - 1
 
@@ -29,32 +31,88 @@ export function SessionCard({ session }: SessionCardProps) {
     day: 'numeric',
   })
 
-  // Handle image click - open lightbox
-  const handleImageClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setLightboxIndex(0)
+  // Handle image click - open lightbox at specific index
+  const handleImageClick = (index: number) => {
+    setLightboxIndex(index)
     setLightboxOpen(true)
   }
+
+  // Track scroll position for pagination dots
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container || !session.images || session.images.length <= 1) return
+
+    let timeoutId: NodeJS.Timeout
+
+    const handleScroll = () => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        const scrollLeft = container.scrollLeft
+        const itemWidth = container.offsetWidth
+        const newIndex = Math.round(scrollLeft / itemWidth)
+        setCurrentScrollIndex(newIndex)
+      }, 50) // Debounce for performance
+    }
+
+    container.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      clearTimeout(timeoutId)
+      container.removeEventListener('scroll', handleScroll)
+    }
+  }, [session.images])
 
   return (
     <>
       <div className="group relative flex flex-col sm:flex-row bg-card text-card-foreground border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-        {/* Image Section - Click to open lightbox */}
-        <div
-          onClick={mainImage ? handleImageClick : undefined}
-          className={`relative w-full sm:w-40 h-48 sm:h-auto shrink-0 bg-foreground/5 ${
-            mainImage ? 'cursor-pointer' : ''
-          }`}
-        >
-          {mainImage ? (
-            <Image
-              src={mainImage}
-              alt={session.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 640px) 100vw, 160px"
-            />
+        {/* Image Section - Horizontal Scroll */}
+        <div className="relative w-full sm:w-40 h-48 sm:h-auto shrink-0 bg-foreground/5">
+          {session.images && session.images.length > 0 ? (
+            <>
+              {/* Horizontal Scroll Container */}
+              <div
+                ref={scrollContainerRef}
+                className="overflow-x-auto snap-x snap-mandatory scroll-smooth hide-scrollbar h-full"
+                style={{ touchAction: 'pan-x' }}
+                role="region"
+                aria-label={`${session.title} image gallery`}
+                aria-roledescription="carousel"
+              >
+                <div className="flex h-full">
+                  {session.images.map((image, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleImageClick(index)}
+                      className="w-full sm:w-40 h-48 sm:h-auto shrink-0 snap-center snap-always relative cursor-pointer"
+                    >
+                      <Image
+                        src={image}
+                        alt={`${session.title} - Image ${index + 1}`}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, 160px"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Pagination Dots - Only show for multiple images */}
+              {session.images.length > 1 && (
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                  {session.images.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`rounded-full transition-all duration-200 ${
+                        index === currentScrollIndex
+                          ? 'bg-white w-4 h-1.5'
+                          : 'bg-white/50 w-1.5 h-1.5'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
           ) : (
             <div className="flex items-center justify-center w-full h-full text-foreground/20">
               <svg
@@ -71,13 +129,6 @@ export function SessionCard({ session }: SessionCardProps) {
                   d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
                 />
               </svg>
-            </div>
-          )}
-
-          {/* Multiple Images Indicator */}
-          {additionalImagesCount > 0 && (
-            <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs font-bold px-2 py-1 rounded-md backdrop-blur-sm">
-              +{additionalImagesCount}
             </div>
           )}
         </div>
