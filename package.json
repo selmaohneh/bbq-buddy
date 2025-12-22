@@ -10,13 +10,15 @@
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
+    "@mdi/js": "^7.4.47",
+    "@mdi/react": "^1.6.1",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/ssr": "^0.8.0",
-    "lucide-react": "^0.562.0",
     "next": "16.0.10",
     "react": "19.2.1",
     "react-dom": "19.2.1",
+    "react-icons": "^5.5.0",
     "sonner": "^2.0.7"
   },
   "devDependencies": {

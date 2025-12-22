@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Flame, Calendar } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiFire, mdiCalendar } from '@mdi/js'
 import { BBQStatistics } from '@/types/statistics'
 import { StatsEmptyState } from './StatsEmptyState'
 import { getStatistics } from '@/app/actions/get-statistics'
@@ -53,7 +54,7 @@ export function StatsSection() {
           </>
         ) : (
           <>
-            <Flame className="w-6 h-6 text-primary" />
+            <Icon path={mdiFire} size={1} className="w-6 h-6 text-primary" />
             <div className="text-4xl font-bold text-foreground tabular-nums">
               {stats?.totalSessions || 0}
             </div>
@@ -74,7 +75,7 @@ export function StatsSection() {
           </>
         ) : (
           <>
-            <Calendar className="w-6 h-6 text-primary" />
+            <Icon path={mdiCalendar} size={1} className="w-6 h-6 text-primary" />
             <div className="text-4xl font-bold text-foreground tabular-nums">
               {stats?.daysThisYear || 0}
             </div>

@@ -1,4 +1,5 @@
-import { Gem, Fuel, Trees, Zap, AlarmSmoke, MoreHorizontal } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiGrill, mdiGasCylinder, mdiCampfire, mdiLightningBolt, mdiSmoke, mdiDotsHorizontal } from '@mdi/js'
 
 interface GrillTypeTagProps {
   type: string
@@ -6,16 +7,16 @@ interface GrillTypeTagProps {
   showText?: boolean
 }
 
-const ICONS: Record<string, any> = {
-  Coal: Gem,
-  Gas: Fuel,
-  Wood: Trees,
-  Electric: Zap,
-  Smoke: AlarmSmoke,
+const ICON_PATHS: Record<string, string> = {
+  Coal: mdiGrill,
+  Gas: mdiGasCylinder,
+  Wood: mdiCampfire,
+  Electric: mdiLightningBolt,
+  Smoke: mdiSmoke,
 }
 
 export function GrillTypeTag({ type, size = 'sm', showText = true }: GrillTypeTagProps) {
-  const IconComponent = ICONS[type] || MoreHorizontal
+  const iconPath = ICON_PATHS[type] || mdiDotsHorizontal
   
   const iconSize = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'
   const textSize = size === 'sm' ? 'text-xs' : 'text-sm'
@@ -28,7 +29,7 @@ export function GrillTypeTag({ type, size = 'sm', showText = true }: GrillTypeTa
       className={`inline-flex items-center gap-1 ${padding} rounded-full ${textSize} font-medium bg-slate-100 text-slate-700 border border-slate-200`}
       title={!showText ? type : undefined}
     >
-      <IconComponent className={iconSize} />
+      <Icon path={iconPath} size={size === 'sm' ? 0.5 : 0.6} className={iconSize} />
       {showText && <span>{type}</span>}
     </span>
   )

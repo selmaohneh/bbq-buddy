@@ -1,5 +1,6 @@
 import { WeatherType } from '@/types/session'
-import { Sun, Cloud, Wind, CloudRain, CloudSnow } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiWeatherSunny, mdiWeatherCloudy, mdiWeatherWindy, mdiWeatherRainy, mdiWeatherSnowy } from '@mdi/js'
 
 interface WeatherTagProps {
   weather: WeatherType
@@ -7,16 +8,16 @@ interface WeatherTagProps {
   showText?: boolean
 }
 
-const WEATHER_ICONS = {
-  Sunny: Sun,
-  Cloudy: Cloud,
-  Windy: Wind,
-  Rain: CloudRain,
-  Snow: CloudSnow,
+const WEATHER_ICON_PATHS = {
+  Sunny: mdiWeatherSunny,
+  Cloudy: mdiWeatherCloudy,
+  Windy: mdiWeatherWindy,
+  Rain: mdiWeatherRainy,
+  Snow: mdiWeatherSnowy,
 }
 
 export function WeatherTag({ weather, size = 'sm', showText = true }: WeatherTagProps) {
-  const IconComponent = WEATHER_ICONS[weather]
+  const iconPath = WEATHER_ICON_PATHS[weather]
   const sizeClasses = showText 
     ? (size === 'sm' ? 'text-xs px-2 py-0.5' : 'text-sm px-2.5 py-1')
     : (size === 'sm' ? 'p-1' : 'p-1.5')
@@ -31,7 +32,7 @@ export function WeatherTag({ weather, size = 'sm', showText = true }: WeatherTag
       `}
       title={!showText ? weather : undefined}
     >
-      <IconComponent className={iconSize} />
+      <Icon path={iconPath} size={size === 'sm' ? 0.5 : 0.55} className={iconSize} />
       {showText && <span>{weather}</span>}
     </span>
   )
