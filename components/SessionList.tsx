@@ -12,7 +12,7 @@ interface SessionListProps {
 export function SessionList({ initialSessions }: SessionListProps) {
   const [sessions, setSessions] = useState<Session[]>(initialSessions)
   const [page, setPage] = useState(1) // Next page to fetch
-  const [hasMore, setHasMore] = useState(initialSessions.length >= 5) // Assuming PAGE_SIZE is 5
+  const [hasMore, setHasMore] = useState(initialSessions.length >= 10) // PAGE_SIZE is 10
   const [loading, setLoading] = useState(false)
 
   const loadMore = async () => {
@@ -20,7 +20,7 @@ export function SessionList({ initialSessions }: SessionListProps) {
     try {
       const newSessions = await getSessions(page)
       
-      if (newSessions.length < 5) {
+      if (newSessions.length < 10) {
         setHasMore(false)
       }
       
