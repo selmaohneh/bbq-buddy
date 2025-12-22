@@ -45,7 +45,7 @@ export function FollowButton({
           toast.error(result.error || 'Failed to update follow status')
         } else {
           // Success - show toast and notify parent
-          toast.success(isFollowing ? 'Unfollowed successfully' : 'Now following!')
+          toast.success(isFollowing ? 'User unfollowed' : 'Now following!')
           onFollowChange?.(!isFollowing)
         }
       } catch (error) {
@@ -96,7 +96,7 @@ export function FollowButton({
           Loading...
         </span>
       ) : isFollowing ? (
-        'Following'
+        'Unfollow'
       ) : (
         'Follow'
       )}

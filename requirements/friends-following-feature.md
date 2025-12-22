@@ -12,7 +12,7 @@ This document specifies the requirements for implementing a social following sys
 **So that** I can discover and connect with other BBQ enthusiasts
 
 **Acceptance Criteria:**
-- Search is accessible via a friends icon on the profile page
+- Search is accessible via a friends icon in the top navbar (next to avatar) when on profile page
 - Search supports partial username matching (case-insensitive)
 - Search results update as I type (with debouncing)
 - Search excludes my own profile from results
@@ -41,7 +41,7 @@ This document specifies the requirements for implementing a social following sys
 
 **Acceptance Criteria:**
 - I can unfollow from the user's profile page
-- Clicking "Following" button unfollows the user
+- Button shows "Unfollow" when following (clear action-oriented label)
 - Unfollowing state updates immediately (optimistic update)
 - I receive confirmation when unfollow succeeds
 - I receive error message if unfollow fails
@@ -75,14 +75,15 @@ This document specifies the requirements for implementing a social following sys
 
 ### US-6: See Follower Counts
 **As a** BBQ Buddy user
-**I want to** see how many followers a user has
-**So that** I can gauge their popularity in the community
+**I want to** see how many followers I have and how many others have
+**So that** I can gauge popularity in the community
 
 **Acceptance Criteria:**
-- Follower count displayed below "Member since" on profiles
+- Follower count displayed below "Member since" on all profiles (own and others)
 - Count shows singular "follower" or plural "followers"
 - Count updates immediately after follow/unfollow
-- Count is visible on both own profile and other profiles
+- Own profile shows follower count fetched from database
+- Other profiles show follower count fetched from database
 
 ---
 
