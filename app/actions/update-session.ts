@@ -3,6 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { MAX_IMAGES_PER_SESSION } from '@/types/session'
 
 export async function updateSession(id: string, prevState: any, formData: FormData) {
   const supabase = await createClient()
@@ -71,6 +72,12 @@ export async function updateSession(id: string, prevState: any, formData: FormDa
   // Get image URLs that were already uploaded from the client
   const newImageUrls = formData.getAll('newImageUrls') as string[]
   const keptImages = formData.getAll('keptImages') as string[]
+
+  // Validate total image count (kept + new)
+  const totalImageCount = keptImages.length + newImageUrls.length
+  if (totalImageCount > MAX_IMAGES_PER_SESSION) {
+    return { message: `Maximum ${MAX_IMAGES_PER_SESSION} images allowed per session` }
+  }
 
   if (!title || !date) {
     return { message: 'Title and Date are required' }
