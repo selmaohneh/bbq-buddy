@@ -421,10 +421,19 @@ interface FollowButtonProps {
 
 ### Row Level Security
 
+**Follows Table:**
 - All follow operations enforced by RLS policies
 - Users can only create follows for themselves
 - Users can only delete their own follows
 - All users can view all follows (public profiles)
+
+**Sessions Table:**
+- **SELECT**: Public read access (anyone can view all sessions)
+  - Required for displaying stats on user profiles
+  - Supports community discovery and social features
+- **INSERT**: Only authenticated users can create their own sessions
+- **UPDATE**: Only session owner can update their sessions
+- **DELETE**: Only session owner can delete their sessions
 
 ### Input Validation
 
@@ -432,12 +441,24 @@ interface FollowButtonProps {
 - User IDs: Validated as UUIDs
 - Self-follow: Prevented by database constraint and server validation
 
-### Privacy
+### Privacy & Data Access
 
+**Public Information:**
 - User statistics (BBQ sessions) are publicly viewable on all profiles
-- Session details are public (supports community discovery and engagement)
-- All profiles publicly viewable (by design)
-- Usernames publicly searchable (by design)
+- Session data (title, date, images) is publicly readable
+- All profiles are publicly viewable (by design)
+- Usernames are publicly searchable (by design)
+
+**Rationale:**
+- Supports community discovery and engagement
+- Allows users to find active BBQ enthusiasts
+- Encourages social interaction through visible activity
+- Aligns with social app principles (like Instagram, Strava, etc.)
+
+**Protected Operations:**
+- Only session owners can create, edit, or delete their sessions
+- Only profile owners can edit their profile (avatar, username)
+- Follow/unfollow operations require authentication
 
 ---
 
