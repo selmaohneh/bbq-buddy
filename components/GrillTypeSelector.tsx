@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { PREDEFINED_GRILL_TYPES } from '@/types/session'
 import Icon from '@mdi/react'
-import { mdiGrill, mdiGasCylinder, mdiCampfire, mdiBolt, mdiSmoke, mdiDotsHorizontal, mdiClose } from '@mdi/js'
+import { mdiGrill, mdiGasCylinder, mdiCampfire, mdiLightningBolt, mdiSmoke, mdiDotsHorizontal, mdiClose } from '@mdi/js'
 
 interface GrillTypeSelectorProps {
   value: string[] | null
@@ -14,7 +14,7 @@ const ICON_PATHS: Record<string, string> = {
   Coal: mdiGrill,
   Gas: mdiGasCylinder,
   Wood: mdiCampfire,
-  Electric: mdiBolt,
+  Electric: mdiLightningBolt,
   Smoke: mdiSmoke,
 }
 

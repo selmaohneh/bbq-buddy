@@ -1,5 +1,5 @@
 import Icon from '@mdi/react'
-import { mdiGrill, mdiGasCylinder, mdiCampfire, mdiBolt, mdiSmoke, mdiDotsHorizontal } from '@mdi/js'
+import { mdiGrill, mdiGasCylinder, mdiCampfire, mdiLightningBolt, mdiSmoke, mdiDotsHorizontal } from '@mdi/js'
 
 interface GrillTypeTagProps {
   type: string
@@ -11,7 +11,7 @@ const ICON_PATHS: Record<string, string> = {
   Coal: mdiGrill,
   Gas: mdiGasCylinder,
   Wood: mdiCampfire,
-  Electric: mdiBolt,
+  Electric: mdiLightningBolt,
   Smoke: mdiSmoke,
 }
 
