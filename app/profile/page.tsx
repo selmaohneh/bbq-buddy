@@ -103,7 +103,12 @@ export default function Profile() {
             }}
           />
           {username && (
-            <p className="text-lg text-foreground">@{username}</p>
+            <div className="text-center">
+              <p className="text-lg text-foreground">@{username}</p>
+              <p className="text-sm text-foreground/60">
+                BBQ Buddy since {new Date(session.user.created_at).getFullYear()}
+              </p>
+            </div>
           )}
         </div>
 
