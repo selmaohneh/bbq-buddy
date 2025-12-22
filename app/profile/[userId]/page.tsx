@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { getUserProfile } from '@/app/actions/get-user-profile'
 import Avatar from '@/components/Avatar'
 import { FollowButton } from '@/components/FollowButton'
+import { StatsSection } from '@/components/StatsSection'
 
 interface UserProfilePageProps {
   params: Promise<{
@@ -79,7 +80,8 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
           />
         </div>
 
-        {/* Privacy Note: We intentionally do not show other users' BBQ statistics */}
+        {/* BBQ Statistics */}
+        <StatsSection userId={userProfile.id} />
       </main>
     </div>
   )

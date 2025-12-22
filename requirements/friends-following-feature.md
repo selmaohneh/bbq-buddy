@@ -49,13 +49,13 @@ This document specifies the requirements for implementing a social following sys
 ### US-4: View User Profiles
 **As a** BBQ Buddy user
 **I want to** view other users' profiles
-**So that** I can learn about other BBQ enthusiasts
+**So that** I can learn about other BBQ enthusiasts and their BBQ activity
 
 **Acceptance Criteria:**
 - User profiles are accessible at `/profile/[userId]`
 - Profile displays: avatar, username, member since date, follower count
-- Profile is readonly (no editing capabilities)
-- User's BBQ statistics are not visible (privacy)
+- Profile displays BBQ statistics (same as own profile: total sessions, days this year)
+- Profile is readonly (no editing capabilities for avatar/username)
 - Follow/unfollow button is displayed on profile
 - Accessing my own profile via `/profile/[myId]` redirects to `/profile`
 - Accessing non-existent user shows friendly error message
@@ -434,7 +434,8 @@ interface FollowButtonProps {
 
 ### Privacy
 
-- User statistics (BBQ sessions) not shown on other profiles
+- User statistics (BBQ sessions) are publicly viewable on all profiles
+- Session details are public (supports community discovery and engagement)
 - All profiles publicly viewable (by design)
 - Usernames publicly searchable (by design)
 
