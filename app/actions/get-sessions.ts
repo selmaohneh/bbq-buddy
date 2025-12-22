@@ -3,7 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { Session } from '@/types/session'
 
-const PAGE_SIZE = 5
+const PAGE_SIZE = 10
 
 export async function getSessions(page: number = 0): Promise<Session[]> {
   const supabase = await createClient()
