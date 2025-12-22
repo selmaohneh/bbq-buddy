@@ -7,12 +7,15 @@ import { useProfile } from '@/components/ProfileProvider'
 import { toast } from 'sonner'
 import { deleteAvatar } from '@/app/actions/delete-avatar'
 import { StatsSection } from '@/components/StatsSection'
+import { getFollowerCount } from '@/app/actions/get-follower-count'
 
 export default function Profile() {
   const { supabase, session } = useSupabase()
   const { profile, refreshProfile } = useProfile()
   const [username, setUsername] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
+  const [followerCount, setFollowerCount] = useState<number>(0)
+  const [isLoadingFollowers, setIsLoadingFollowers] = useState(true)
 
   // Sync local state with global profile when it loads
   useEffect(() => {
@@ -21,6 +24,19 @@ export default function Profile() {
       setAvatarUrl(profile.avatar_url)
     }
   }, [profile])
+
+  // Fetch follower count
+  useEffect(() => {
+    async function loadFollowerCount() {
+      if (session?.user?.id) {
+        setIsLoadingFollowers(true)
+        const count = await getFollowerCount(session.user.id)
+        setFollowerCount(count)
+        setIsLoadingFollowers(false)
+      }
+    }
+    loadFollowerCount()
+  }, [session?.user?.id])
 
   async function updateProfile({
     avatar_url,
@@ -104,9 +120,19 @@ export default function Profile() {
           />
           {username && (
             <div className="text-center">
-              <p className="text-lg text-foreground">@{username}</p>
+              <p className="text-lg text-foreground mb-1">@{username}</p>
               <p className="text-sm text-foreground/60">
                 BBQ Buddy since {new Date(session.user.created_at).getFullYear()}
+              </p>
+              {/* Follower Count */}
+              <p className="text-sm text-foreground/60 mt-1">
+                {isLoadingFollowers ? (
+                  <span className="opacity-50">Loading...</span>
+                ) : (
+                  <>
+                    {followerCount} {followerCount === 1 ? 'follower' : 'followers'}
+                  </>
+                )}
               </p>
             </div>
           )}

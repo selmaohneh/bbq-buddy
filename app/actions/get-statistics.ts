@@ -14,22 +14,31 @@ function getDefaultStats(): BBQStatistics {
 }
 
 /**
- * Fetches BBQ statistics for the currently authenticated user
+ * Fetches BBQ statistics for a user
  *
  * Statistics include:
  * - Total sessions (all-time count)
  * - Days grilled this year (unique days in current calendar year)
  *
+ * @param userId - Optional user ID. If not provided, uses the currently authenticated user.
+ *
  * Uses a single optimized query to fetch all sessions and calculate stats client-side.
  * Falls back to default (zero) values on error for graceful degradation.
  */
-export async function getStatistics(): Promise<BBQStatistics> {
+export async function getStatistics(userId?: string): Promise<BBQStatistics> {
   try {
     const supabase = await createClient()
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return getDefaultStats()
+    // Determine which user's stats to fetch
+    let targetUserId: string | undefined = userId
+
+    // If no userId provided, use authenticated user
+    if (!targetUserId) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        return getDefaultStats()
+      }
+      targetUserId = user.id
     }
 
     // Get current year for filtering
@@ -41,7 +50,7 @@ export async function getStatistics(): Promise<BBQStatistics> {
     const { data: sessions, error } = await supabase
       .from('sessions')
       .select('date')
-      .eq('user_id', user.id)
+      .eq('user_id', targetUserId)
 
     if (error) {
       console.error('[Statistics] Database error:', error)

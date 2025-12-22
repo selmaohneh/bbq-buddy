@@ -43,11 +43,21 @@ create table if not exists public.sessions (
 
 -- RLS & Policies
 alter table public.sessions enable row level security;
+
+-- Public read access (anyone can view all sessions - supports social features)
 drop policy if exists "Users can view their own sessions." on public.sessions;
-create policy "Users can view their own sessions." on public.sessions for select using (auth.uid() = user_id);
+drop policy if exists "Anyone can view sessions." on public.sessions;
+create policy "Anyone can view sessions." on public.sessions for select using (true);
+
+-- Owner-only write access
 drop policy if exists "Users can insert their own sessions." on public.sessions;
 create policy "Users can insert their own sessions." on public.sessions for insert with check (auth.uid() = user_id);
--- ... (other policies)
+
+drop policy if exists "Users can update their own sessions." on public.sessions;
+create policy "Users can update their own sessions." on public.sessions for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+drop policy if exists "Users can delete their own sessions." on public.sessions;
+create policy "Users can delete their own sessions." on public.sessions for delete using (auth.uid() = user_id);
 
 -- Storage
 insert into storage.buckets (id, name, public) values ('session-images', 'session-images', true) on conflict (id) do nothing;
