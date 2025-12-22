@@ -1,4 +1,5 @@
-import { Carrot, Drumstick, Fish, Ham, MoreHorizontal, CircleOff } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiCarrot, mdiFoodDrumstick, mdiFish, mdiPig, mdiCow, mdiDotsHorizontal } from '@mdi/js'
 
 interface MeatTypeTagProps {
   type: string
@@ -6,16 +7,16 @@ interface MeatTypeTagProps {
   showText?: boolean
 }
 
-const ICONS: Record<string, any> = {
-  Veggie: Carrot,
-  Beef: CircleOff,
-  Pork: Ham,
-  Chicken: Drumstick,
-  Fish: Fish,
+const ICON_PATHS: Record<string, string> = {
+  Veggie: mdiCarrot,
+  Beef: mdiCow,
+  Pork: mdiPig,
+  Chicken: mdiFoodDrumstick,
+  Fish: mdiFish,
 }
 
 export function MeatTypeTag({ type, size = 'sm', showText = true }: MeatTypeTagProps) {
-  const IconComponent = ICONS[type] || MoreHorizontal
+  const iconPath = ICON_PATHS[type] || mdiDotsHorizontal
   
   const iconSize = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'
   const textSize = size === 'sm' ? 'text-xs' : 'text-sm'
@@ -28,7 +29,7 @@ export function MeatTypeTag({ type, size = 'sm', showText = true }: MeatTypeTagP
       className={`inline-flex items-center gap-1 ${padding} rounded-full ${textSize} font-medium bg-rose-100 text-rose-700 border border-rose-200`}
       title={!showText ? type : undefined}
     >
-      <IconComponent className={iconSize} />
+      <Icon path={iconPath} size={size === 'sm' ? 0.5 : 0.6} className={iconSize} />
       {showText && <span>{type}</span>}
     </span>
   )

@@ -1,19 +1,20 @@
 'use client'
 
 import { WeatherType, WEATHER_OPTIONS } from '@/types/session'
-import { Sun, Cloud, Wind, CloudRain, CloudSnow } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiWeatherSunny, mdiWeatherCloudy, mdiWeatherWindy, mdiWeatherRainy, mdiWeatherSnowy } from '@mdi/js'
 
 interface WeatherSelectorProps {
   value: WeatherType[] | null
   onChange: (value: WeatherType[]) => void
 }
 
-const WEATHER_ICONS = {
-  Sunny: Sun,
-  Cloudy: Cloud,
-  Windy: Wind,
-  Rain: CloudRain,
-  Snow: CloudSnow,
+const WEATHER_ICON_PATHS = {
+  Sunny: mdiWeatherSunny,
+  Cloudy: mdiWeatherCloudy,
+  Windy: mdiWeatherWindy,
+  Rain: mdiWeatherRainy,
+  Snow: mdiWeatherSnowy,
 }
 
 export function WeatherSelector({ value, onChange }: WeatherSelectorProps) {
@@ -33,7 +34,7 @@ export function WeatherSelector({ value, onChange }: WeatherSelectorProps) {
     <div className="flex flex-wrap gap-2">
       {WEATHER_OPTIONS.map((option) => {
         const isSelected = selectedWeather.includes(option.value)
-        const IconComponent = WEATHER_ICONS[option.value]
+        const iconPath = WEATHER_ICON_PATHS[option.value]
 
         return (
           <button
@@ -51,7 +52,7 @@ export function WeatherSelector({ value, onChange }: WeatherSelectorProps) {
             `}
             aria-pressed={isSelected}
           >
-            <IconComponent className="w-4 h-4" />
+            <Icon path={iconPath} size={0.6} className="w-4 h-4" />
             <span>{option.label}</span>
           </button>
         )

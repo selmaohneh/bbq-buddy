@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Flame } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiFire } from '@mdi/js'
 
 /**
  * StatsEmptyState Component
@@ -12,7 +13,7 @@ export function StatsEmptyState() {
     <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-8 text-center">
       {/* Muted grill icon */}
       <div className="flex justify-center mb-4">
-        <Flame size={48} className="text-foreground/20" />
+        <Icon path={mdiFire} size={2} className="text-foreground/20" />
       </div>
 
       {/* Heading */}

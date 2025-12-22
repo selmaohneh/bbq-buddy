@@ -2,19 +2,20 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { PREDEFINED_GRILL_TYPES } from '@/types/session'
-import { Gem, Fuel, Trees, Zap, AlarmSmoke, MoreHorizontal, X } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiGrill, mdiGasCylinder, mdiCampfire, mdiBolt, mdiSmoke, mdiDotsHorizontal, mdiClose } from '@mdi/js'
 
 interface GrillTypeSelectorProps {
   value: string[] | null
   onChange: (value: string[]) => void
 }
 
-const ICONS: Record<string, any> = {
-  Coal: Gem,
-  Gas: Fuel,
-  Wood: Trees,
-  Electric: Zap,
-  Smoke: AlarmSmoke,
+const ICON_PATHS: Record<string, string> = {
+  Coal: mdiGrill,
+  Gas: mdiGasCylinder,
+  Wood: mdiCampfire,
+  Electric: mdiBolt,
+  Smoke: mdiSmoke,
 }
 
 export function GrillTypeSelector({ value, onChange }: GrillTypeSelectorProps) {
@@ -69,7 +70,7 @@ export function GrillTypeSelector({ value, onChange }: GrillTypeSelectorProps) {
       {/* Predefined Chips */}
       {predefined.map((option) => {
         const isSelected = selectedTypes.includes(option.value)
-        const IconComponent = ICONS[option.value] || MoreHorizontal
+        const iconPath = ICON_PATHS[option.value] || mdiDotsHorizontal
 
         return (
           <button
@@ -86,7 +87,7 @@ export function GrillTypeSelector({ value, onChange }: GrillTypeSelectorProps) {
               }
             `}
           >
-            <IconComponent className="w-4 h-4" />
+            <Icon path={iconPath} size={0.6} className="w-4 h-4" />
             <span>{option.label}</span>
           </button>
         )
@@ -105,10 +106,10 @@ export function GrillTypeSelector({ value, onChange }: GrillTypeSelectorProps) {
             bg-slate-700 text-white border-slate-700
           "
         >
-          <MoreHorizontal className="w-4 h-4" />
+          <Icon path={mdiDotsHorizontal} size={0.6} className="w-4 h-4" />
           <span>{type}</span>
           <div className="ml-1 rounded-full bg-white/20 p-0.5 hover:bg-white/30">
-             <X className="w-3 h-3" />
+             <Icon path={mdiClose} size={0.5} className="w-3 h-3" />
           </div>
         </button>
       ))}
@@ -137,7 +138,7 @@ export function GrillTypeSelector({ value, onChange }: GrillTypeSelectorProps) {
             border border-dashed border-slate-400 text-slate-500 hover:text-slate-700 hover:border-slate-500 hover:bg-slate-50
           "
         >
-          <MoreHorizontal className="w-4 h-4" />
+          <Icon path={mdiDotsHorizontal} size={0.6} className="w-4 h-4" />
           <span>Other</span>
         </button>
       )}

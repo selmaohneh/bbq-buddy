@@ -2,7 +2,8 @@
 
 import { useActionState, useRef, useState } from 'react'
 import Image from 'next/image'
-import { Camera, Image as ImageIcon } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiCamera, mdiImage } from '@mdi/js'
 import { SubmitButton } from '@/components/SubmitButton'
 import { MealTimeSelector } from '@/components/MealTimeSelector'
 import { WeatherSelector } from '@/components/WeatherSelector'
@@ -389,7 +390,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
                   </>
                 ) : (
                   <>
-                    <Camera className="w-5 h-5" />
+                    <Icon path={mdiCamera} size={0.8} className="w-5 h-5" />
                     Take Photo
                   </>
                 )}
@@ -409,7 +410,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
                   </>
                 ) : (
                   <>
-                    <ImageIcon className="w-5 h-5" />
+                    <Icon path={mdiImage} size={0.8} className="w-5 h-5" />
                     Upload Photos
                   </>
                 )}

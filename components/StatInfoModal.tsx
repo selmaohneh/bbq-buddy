@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useCallback } from 'react'
-import { X } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiClose } from '@mdi/js'
 import { StatType, STAT_INFO } from '@/types/statistics'
 
 interface StatInfoModalProps {
@@ -65,7 +66,7 @@ export function StatInfoModal({ type, onClose }: StatInfoModalProps) {
           className="absolute top-4 right-4 text-foreground/40 hover:text-foreground/80 transition-colors p-2 -m-2 rounded-full hover:bg-foreground/5"
           aria-label="Close modal"
         >
-          <X size={20} />
+          <Icon path={mdiClose} size={0.8} />
         </button>
 
         {/* Modal title */}

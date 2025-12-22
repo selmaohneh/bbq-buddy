@@ -1,4 +1,5 @@
-import { Users } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiAccountGroup } from '@mdi/js'
 
 interface PeopleCountTagProps {
   count: number
@@ -7,7 +8,7 @@ interface PeopleCountTagProps {
 export function PeopleCountTag({ count }: PeopleCountTagProps) {
   return (
     <div className="inline-flex items-center gap-1 text-xs text-foreground/60">
-      <Users className="w-3.5 h-3.5" />
+      <Icon path={mdiAccountGroup} size={0.55} className="w-3.5 h-3.5" />
       <span className="font-medium">{count}</span>
     </div>
   )

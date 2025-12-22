@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { X, Save, FileText } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiClose, mdiContentSave, mdiTextBox } from '@mdi/js'
 
 interface NotesSectionProps {
   value: string
@@ -56,7 +57,7 @@ export function NotesSection({ value, onChange }: NotesSectionProps) {
             : 'bg-transparent border-foreground/20 text-foreground/60 hover:border-primary hover:text-primary'
           }
         `}>
-          <FileText className="w-6 h-6 shrink-0" />
+          <Icon path={mdiTextBox} size={1} className="w-6 h-6 shrink-0" />
           <div className="flex-1 whitespace-pre-wrap break-words overflow-hidden font-medium">
             {value || 'Add any notes about your session...'}
           </div>
@@ -82,7 +83,7 @@ export function NotesSection({ value, onChange }: NotesSectionProps) {
               onClick={closeEditor}
               className="p-2 -mr-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
             >
-              <X className="w-5 h-5" />
+              <Icon path={mdiClose} size={0.8} className="w-5 h-5" />
             </button>
           </div>
 
@@ -112,7 +113,7 @@ export function NotesSection({ value, onChange }: NotesSectionProps) {
               onClick={handleSave}
               className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors"
             >
-              <Save className="w-4 h-4" />
+              <Icon path={mdiContentSave} size={0.6} className="w-4 h-4" />
               Save Notes
             </button>
           </div>

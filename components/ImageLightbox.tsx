@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
-import { X, ChevronLeft, ChevronRight } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiClose, mdiChevronLeft, mdiChevronRight } from '@mdi/js'
 
 interface ImageLightboxProps {
   images: string[]
@@ -132,7 +133,7 @@ export default function ImageLightbox({
           className="absolute top-4 right-4 z-10 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white"
           aria-label="Close image gallery"
         >
-          <X size={24} />
+          <Icon path={mdiClose} size={1} />
         </button>
 
         {/* Image Counter */}
@@ -153,7 +154,7 @@ export default function ImageLightbox({
             className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white"
             aria-label="Previous image"
           >
-            <ChevronLeft size={24} />
+            <Icon path={mdiChevronLeft} size={1} />
           </button>
         )}
 
@@ -164,7 +165,7 @@ export default function ImageLightbox({
             className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white"
             aria-label="Next image"
           >
-            <ChevronRight size={24} />
+            <Icon path={mdiChevronRight} size={1} />
           </button>
         )}
 

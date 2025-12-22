@@ -1,6 +1,7 @@
 'use client'
 
-import { Minus, Plus } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiMinus, mdiPlus } from '@mdi/js'
 
 interface NumberControlProps {
   value: number
@@ -38,7 +39,7 @@ export function NumberControl({ value, onChange, min = 1 }: NumberControlProps) 
         `}
         aria-label="Decrease number of people"
       >
-        <Minus className="w-5 h-5" />
+        <Icon path={mdiMinus} size={0.8} className="w-5 h-5" />
       </button>
 
       {/* Value Display */}
@@ -59,7 +60,7 @@ export function NumberControl({ value, onChange, min = 1 }: NumberControlProps) 
         "
         aria-label="Increase number of people"
       >
-        <Plus className="w-5 h-5" />
+        <Icon path={mdiPlus} size={0.8} className="w-5 h-5" />
       </button>
     </div>
   )

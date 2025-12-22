@@ -1,13 +1,14 @@
 'use client'
 
-import { Flame, Calendar, CalendarDays, CalendarClock, Info, LucideIcon } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiFire, mdiCalendar, mdiCalendarToday, mdiCalendarClock, mdiInformationOutline } from '@mdi/js'
 import { StatType, EMPTY_HINTS } from '@/types/statistics'
 
-const iconMap: Record<string, LucideIcon> = {
-  flame: Flame,
-  calendar: Calendar,
-  'calendar-days': CalendarDays,
-  'calendar-clock': CalendarClock,
+const iconMap: Record<string, string> = {
+  flame: mdiFire,
+  calendar: mdiCalendar,
+  'calendar-days': mdiCalendarToday,
+  'calendar-clock': mdiCalendarClock,
 }
 
 interface StatCardProps {
@@ -31,7 +32,7 @@ interface StatCardProps {
  * Shows muted styling and hint text when value is 0.
  */
 export function StatCard({ icon, value, label, statType, onInfoClick }: StatCardProps) {
-  const IconComponent = iconMap[icon] || Flame
+  const iconPath = iconMap[icon] || mdiFire
   const isEmpty = value === 0
   const emptyHint = EMPTY_HINTS[statType]
 
@@ -39,7 +40,7 @@ export function StatCard({ icon, value, label, statType, onInfoClick }: StatCard
     <div className="relative bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow min-h-[160px] flex flex-col">
       {/* Main Icon - Top Left */}
       <div className={`absolute top-4 left-4 text-primary ${isEmpty ? 'opacity-40' : 'opacity-100'}`}>
-        <IconComponent size={24} />
+        <Icon path={iconPath} size={1} />
       </div>
 
       {/* Info Icon - Top Right */}
@@ -48,7 +49,7 @@ export function StatCard({ icon, value, label, statType, onInfoClick }: StatCard
         className="absolute top-4 right-4 text-foreground/40 hover:text-foreground/80 transition-colors p-2 -m-2 rounded-full hover:bg-foreground/5"
         aria-label={`Learn more about ${label}`}
       >
-        <Info size={20} />
+        <Icon path={mdiInformationOutline} size={0.8} />
       </button>
 
       {/* Stat Value and Label - Centered */}

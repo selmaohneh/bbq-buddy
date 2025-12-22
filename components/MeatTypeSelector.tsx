@@ -2,22 +2,20 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { PREDEFINED_MEAT_TYPES } from '@/types/session'
-import { Carrot, Drumstick, Fish, Ham, MoreHorizontal, X, CircleOff } from 'lucide-react'
+import Icon from '@mdi/react'
+import { mdiCarrot, mdiFoodDrumstick, mdiFish, mdiPig, mdiCow, mdiDotsHorizontal, mdiClose } from '@mdi/js'
 
 interface MeatTypeSelectorProps {
   value: string[] | null
   onChange: (value: string[]) => void
 }
 
-// Icon mapping
-// Note: Lucide might not have 'Beef', so we might use a generic or 'Ham' for pork.
-// Beef: CircleOff (placeholder for now, or maybe just text if icon missing)
-const ICONS: Record<string, any> = {
-  Veggie: Carrot,
-  Beef: CircleOff, // Placeholder, usually we'd want a cow icon but Lucide is limited
-  Pork: Ham,
-  Chicken: Drumstick,
-  Fish: Fish,
+const ICON_PATHS: Record<string, string> = {
+  Veggie: mdiCarrot,
+  Beef: mdiCow,
+  Pork: mdiPig,
+  Chicken: mdiFoodDrumstick,
+  Fish: mdiFish,
 }
 
 export function MeatTypeSelector({ value, onChange }: MeatTypeSelectorProps) {
@@ -72,7 +70,7 @@ export function MeatTypeSelector({ value, onChange }: MeatTypeSelectorProps) {
       {/* Predefined Chips */}
       {predefined.map((option) => {
         const isSelected = selectedTypes.includes(option.value)
-        const IconComponent = ICONS[option.value] || MoreHorizontal
+        const iconPath = ICON_PATHS[option.value] || mdiDotsHorizontal
 
         return (
           <button
@@ -89,7 +87,7 @@ export function MeatTypeSelector({ value, onChange }: MeatTypeSelectorProps) {
               }
             `}
           >
-            <IconComponent className="w-4 h-4" />
+            <Icon path={iconPath} size={0.6} className="w-4 h-4" />
             <span>{option.label}</span>
           </button>
         )
@@ -108,10 +106,10 @@ export function MeatTypeSelector({ value, onChange }: MeatTypeSelectorProps) {
             bg-rose-600 text-white border-rose-600
           "
         >
-          <MoreHorizontal className="w-4 h-4" />
+          <Icon path={mdiDotsHorizontal} size={0.6} className="w-4 h-4" />
           <span>{type}</span>
           <div className="ml-1 rounded-full bg-white/20 p-0.5 hover:bg-white/30">
-             <X className="w-3 h-3" />
+             <Icon path={mdiClose} size={0.5} className="w-3 h-3" />
           </div>
         </button>
       ))}
@@ -140,7 +138,7 @@ export function MeatTypeSelector({ value, onChange }: MeatTypeSelectorProps) {
             border border-dashed border-rose-400 text-rose-500 hover:text-rose-700 hover:border-rose-500 hover:bg-rose-50
           "
         >
-          <MoreHorizontal className="w-4 h-4" />
+          <Icon path={mdiDotsHorizontal} size={0.6} className="w-4 h-4" />
           <span>Other</span>
         </button>
       )}
