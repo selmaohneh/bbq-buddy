@@ -11,9 +11,10 @@ import { GrillTypeSelector } from '@/components/GrillTypeSelector'
 import { MeatTypeSelector } from '@/components/MeatTypeSelector'
 import { NumberControl } from '@/components/NumberControl'
 import { NotesSection } from '@/components/NotesSection'
-import { Session, MealTime, WeatherType, DEFAULT_NUMBER_OF_PEOPLE, MIN_NUMBER_OF_PEOPLE } from '@/types/session'
+import { Session, MealTime, WeatherType, DEFAULT_NUMBER_OF_PEOPLE, MIN_NUMBER_OF_PEOPLE, MAX_IMAGE_FILE_SIZE, MAX_IMAGES_PER_SESSION } from '@/types/session'
 import { toast } from 'sonner'
 import { createClient } from '@/utils/supabase/client'
+import { validateImageFile, calculateRemainingSlots } from '@/utils/validation'
 
 interface SessionFormProps {
   initialData?: Session
@@ -142,9 +143,46 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
       try {
         const files = Array.from(event.target.files)
 
-        // Compress all images
+        // Calculate remaining image slots
+        const remainingSlots = calculateRemainingSlots(
+          existingImages.length,
+          newFiles.length,
+          MAX_IMAGES_PER_SESSION
+        )
+
+        if (remainingSlots === 0) {
+          toast.error('Maximum 3 images allowed. Remove existing images to add new ones.')
+          return
+        }
+
+        // Validate file sizes and filter valid files
+        const validFiles: File[] = []
+        for (const file of files) {
+          const validation = validateImageFile(file, MAX_IMAGE_FILE_SIZE)
+          if (!validation.valid) {
+            toast.error(validation.error!)
+          } else {
+            validFiles.push(file)
+          }
+        }
+
+        if (validFiles.length === 0) {
+          return // No valid files to process
+        }
+
+        // Limit to remaining slots
+        const filesToAdd = validFiles.slice(0, remainingSlots)
+
+        // Show warning if some files were rejected due to count limit
+        if (filesToAdd.length < validFiles.length) {
+          toast.warning(
+            `Only ${filesToAdd.length} image(s) added. Maximum is ${MAX_IMAGES_PER_SESSION} images per session.`
+          )
+        }
+
+        // Compress valid images
         const compressedFiles = await Promise.all(
-          files.map((file) => compressImage(file))
+          filesToAdd.map((file) => compressImage(file))
         )
 
         // Create local blob URLs for preview
@@ -179,6 +217,13 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
   }
 
   const clientAction = async (formData: FormData) => {
+    // Defensive check: Validate total image count
+    const totalImages = existingImages.length + newFiles.length
+    if (totalImages > MAX_IMAGES_PER_SESSION) {
+      toast.error(`Maximum ${MAX_IMAGES_PER_SESSION} images allowed per session`)
+      return
+    }
+
     if (newFiles.length > 0) {
       setIsUploading(true)
 
@@ -379,8 +424,14 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
               {/* Camera Capture Button */}
               <button
                 type="button"
-                onClick={() => cameraInputRef.current?.click()}
-                disabled={isCompressing}
+                onClick={() => {
+                  if (existingImages.length + newFiles.length >= MAX_IMAGES_PER_SESSION) {
+                    toast.error('Maximum 3 images allowed. Remove existing images to add new ones.')
+                  } else {
+                    cameraInputRef.current?.click()
+                  }
+                }}
+                disabled={isCompressing || existingImages.length + newFiles.length >= MAX_IMAGES_PER_SESSION}
                 className="flex-1 py-4 border-2 border-dashed border-foreground/20 rounded-xl text-foreground/60 hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-foreground/20 disabled:hover:text-foreground/60"
               >
                 {isCompressing ? (
@@ -399,8 +450,14 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
               {/* Upload Photos Button */}
               <button
                 type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isCompressing}
+                onClick={() => {
+                  if (existingImages.length + newFiles.length >= MAX_IMAGES_PER_SESSION) {
+                    toast.error('Maximum 3 images allowed. Remove existing images to add new ones.')
+                  } else {
+                    fileInputRef.current?.click()
+                  }
+                }}
+                disabled={isCompressing || existingImages.length + newFiles.length >= MAX_IMAGES_PER_SESSION}
                 className="flex-1 py-4 border-2 border-dashed border-foreground/20 rounded-xl text-foreground/60 hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-foreground/20 disabled:hover:text-foreground/60"
               >
                 {isCompressing ? (
@@ -415,6 +472,11 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
                   </>
                 )}
               </button>
+            </div>
+
+            {/* Image Count Helper Text */}
+            <div className="text-sm text-foreground/60 text-center" aria-live="polite">
+              {existingImages.length + newFiles.length} / {MAX_IMAGES_PER_SESSION} images
             </div>
 
             {/* Preview Grid */}

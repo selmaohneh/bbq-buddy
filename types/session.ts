@@ -58,6 +58,10 @@ export const PREDEFINED_MEAT_TYPES: MeatTypeOption[] = [
 export const DEFAULT_NUMBER_OF_PEOPLE = 1;
 export const MIN_NUMBER_OF_PEOPLE = 1;
 
+// Image upload limits
+export const MAX_IMAGE_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
+export const MAX_IMAGES_PER_SESSION = 3;
+
 export interface Session {
   id: string;
   user_id: string;
