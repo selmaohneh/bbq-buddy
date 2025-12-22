@@ -3,10 +3,10 @@ import Link from 'next/link';
 export default function FloatingActionButton() {
   return (
     <div className="fixed bottom-6 left-0 right-0 flex justify-center pointer-events-none z-50">
-      <div className="w-full max-w-lg px-4 relative pointer-events-auto">
+      <div className="w-full max-w-lg px-4 flex justify-end pointer-events-none">
         <Link
           href="/sessions/new"
-          className="absolute bottom-0 right-4 md:right-6 bg-primary hover:brightness-90 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
+          className="pointer-events-auto bg-primary hover:brightness-90 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
           aria-label="Add new session"
         >
           <svg
