@@ -69,12 +69,6 @@ export function SessionList({ initialSessions }: SessionListProps) {
           {loading ? 'Loading...' : 'Load More'}
         </button>
       )}
-      
-      {!hasMore && sessions.length > 0 && (
-          <p className="text-center text-sm text-foreground/40 py-4">
-              You've reached the end of the coals.
-          </p>
-      )}
     </div>
   )
 }
