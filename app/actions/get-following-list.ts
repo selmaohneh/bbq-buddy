@@ -43,10 +43,10 @@ export async function getFollowingList(): Promise<FollowListItem[]> {
 
   // Filter out invalid profiles and map to FollowListItem format
   return (data || [])
-    .filter((item) => item.profiles && item.profiles.username)
-    .map((item) => ({
+    .filter((item: any) => item.profiles && item.profiles.username)
+    .map((item: any) => ({
       id: item.profiles.id,
-      username: item.profiles.username!,
+      username: item.profiles.username,
       avatar_url: item.profiles.avatar_url,
       is_following: true, // By definition, all these users are being followed
     }))

@@ -4,9 +4,9 @@ import Avatar from '@/components/Avatar'
 import { FollowButton } from '@/components/FollowButton'
 
 interface UserProfilePageProps {
-  params: {
+  params: Promise<{
     userId: string
-  }
+  }>
 }
 
 /**
@@ -16,7 +16,7 @@ interface UserProfilePageProps {
  * Redirects to /profile if viewing own profile.
  */
 export default async function UserProfilePage({ params }: UserProfilePageProps) {
-  const { userId } = params
+  const { userId } = await params
   const userProfile = await getUserProfile(userId)
 
   // Handle user not found
