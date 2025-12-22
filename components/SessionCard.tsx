@@ -73,7 +73,7 @@ export function SessionCard({ session }: SessionCardProps) {
               <div
                 ref={scrollContainerRef}
                 className="overflow-x-auto snap-x snap-mandatory scroll-smooth hide-scrollbar h-full"
-                style={{ touchAction: 'pan-x' }}
+                style={{ touchAction: 'pan-x pan-y' }}
                 role="region"
                 aria-label={`${session.title} image gallery`}
                 aria-roledescription="carousel"
