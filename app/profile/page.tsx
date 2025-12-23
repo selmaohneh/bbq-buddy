@@ -162,7 +162,6 @@ export default function Profile() {
 
         {/* Session List - NEW */}
         <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-4">My BBQ Sessions</h2>
           {isLoadingSessions ? (
             <div className="flex justify-center py-8">
               <div className="text-foreground/60">Loading sessions...</div>

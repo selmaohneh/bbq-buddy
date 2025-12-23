@@ -90,9 +90,6 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
 
         {/* Session List - NEW */}
         <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-4">
-            {userProfile.username}'s BBQ Sessions
-          </h2>
           <UserSessionList
             initialSessions={initialSessions}
             userId={userProfile.id}
