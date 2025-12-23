@@ -163,8 +163,8 @@ export default function Profile() {
           <StatsSection />
         </div>
 
-        {/* Session List Section - Full Width */}
-        <div className="w-full max-w-4xl mx-auto px-4 mt-6">
+        {/* Session List Section - Matches Home Page Width */}
+        <div className="w-full max-w-lg mx-auto px-4 mt-6">
           {isLoadingSessions ? (
             <div className="flex justify-center py-8">
               <div className="text-foreground/60">Loading sessions...</div>
