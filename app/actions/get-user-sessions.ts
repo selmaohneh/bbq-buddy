@@ -42,36 +42,25 @@ function sortSessionsByMealTime(sessions: SessionWithProfile[]): SessionWithProf
 }
 
 /**
- * Fetches social feed sessions (user's own + followed users')
+ * Fetches sessions for a specific user (for profile pages)
+ * @param userId - The ID of the user whose sessions to fetch
  * @param page - The page number (0-indexed)
  * @returns SessionWithProfile[] - Sessions with profile information
  */
-export async function getSessions(page: number = 0): Promise<SessionWithProfile[]> {
+export async function getUserSessions(
+  userId: string,
+  page: number = 0
+): Promise<SessionWithProfile[]> {
   const supabase = await createClient()
 
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) return []
-
-  // First, get the list of users the current user follows
-  const { data: follows, error: followsError } = await supabase
-    .from('follows')
-    .select('following_id')
-    .eq('follower_id', user.id)
-
-  if (followsError) {
-    console.error('Error fetching follows:', followsError)
-  }
-
-  const followedUserIds = follows?.map((f) => f.following_id) || []
-
   const from = page * PAGE_SIZE
   const to = from + PAGE_SIZE - 1
 
-  // Build the query to get sessions from user + followed users
-  let query = supabase
+  const { data, error } = await supabase
     .from('sessions')
     .select(
       `
@@ -82,21 +71,12 @@ export async function getSessions(page: number = 0): Promise<SessionWithProfile[
       )
     `
     )
+    .eq('user_id', userId)
     .order('date', { ascending: false })
     .range(from, to)
 
-  // Filter: user's own sessions OR sessions from followed users
-  if (followedUserIds.length > 0) {
-    query = query.or(`user_id.eq.${user.id},user_id.in.(${followedUserIds.join(',')})`)
-  } else {
-    // No followed users, just show own sessions
-    query = query.eq('user_id', user.id)
-  }
-
-  const { data, error } = await query
-
   if (error) {
-    console.error('Error fetching sessions:', error)
+    console.error('Error fetching user sessions:', error)
     return []
   }
 
@@ -106,7 +86,7 @@ export async function getSessions(page: number = 0): Promise<SessionWithProfile[
       ...session,
       username: session.profiles?.username || 'Unknown',
       avatar_url: session.profiles?.avatar_url || null,
-      is_own_session: session.user_id === user.id,
+      is_own_session: user?.id === session.user_id,
       // Remove the nested profiles object
       profiles: undefined,
     })

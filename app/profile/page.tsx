@@ -8,6 +8,10 @@ import { toast } from 'sonner'
 import { deleteAvatar } from '@/app/actions/delete-avatar'
 import { StatsSection } from '@/components/StatsSection'
 import { getFollowerCount } from '@/app/actions/get-follower-count'
+import { getUserSessions } from '@/app/actions/get-user-sessions'
+import { UserSessionList } from '@/components/UserSessionList'
+import FloatingActionButton from '@/components/FloatingActionButton'
+import { SessionWithProfile } from '@/types/session'
 
 export default function Profile() {
   const { supabase, session } = useSupabase()
@@ -16,6 +20,8 @@ export default function Profile() {
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
   const [followerCount, setFollowerCount] = useState<number>(0)
   const [isLoadingFollowers, setIsLoadingFollowers] = useState(true)
+  const [sessions, setSessions] = useState<SessionWithProfile[]>([])
+  const [isLoadingSessions, setIsLoadingSessions] = useState(true)
 
   // Sync local state with global profile when it loads
   useEffect(() => {
@@ -36,6 +42,19 @@ export default function Profile() {
       }
     }
     loadFollowerCount()
+  }, [session?.user?.id])
+
+  // Fetch sessions
+  useEffect(() => {
+    async function loadSessions() {
+      if (session?.user?.id) {
+        setIsLoadingSessions(true)
+        const data = await getUserSessions(session.user.id, 0)
+        setSessions(data)
+        setIsLoadingSessions(false)
+      }
+    }
+    loadSessions()
   }, [session?.user?.id])
 
   async function updateProfile({
@@ -140,7 +159,25 @@ export default function Profile() {
 
         {/* Stats Section */}
         <StatsSection />
+
+        {/* Session List - NEW */}
+        <div className="mt-6">
+          {isLoadingSessions ? (
+            <div className="flex justify-center py-8">
+              <div className="text-foreground/60">Loading sessions...</div>
+            </div>
+          ) : (
+            <UserSessionList
+              initialSessions={sessions}
+              userId={session.user.id}
+              readOnly={false}
+            />
+          )}
+        </div>
       </main>
+
+      {/* Floating Action Button - NEW */}
+      <FloatingActionButton />
     </div>
   )
 }

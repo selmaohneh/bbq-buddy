@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation'
 import { getUserProfile } from '@/app/actions/get-user-profile'
+import { getUserSessions } from '@/app/actions/get-user-sessions'
 import Avatar from '@/components/Avatar'
 import { FollowButton } from '@/components/FollowButton'
 import { StatsSection } from '@/components/StatsSection'
+import { UserSessionList } from '@/components/UserSessionList'
 
 interface UserProfilePageProps {
   params: Promise<{
@@ -19,6 +21,9 @@ interface UserProfilePageProps {
 export default async function UserProfilePage({ params }: UserProfilePageProps) {
   const { userId } = await params
   const userProfile = await getUserProfile(userId)
+
+  // Fetch user's sessions
+  const initialSessions = userProfile ? await getUserSessions(userId, 0) : []
 
   // Handle user not found
   if (!userProfile || !userProfile.username) {
@@ -82,6 +87,15 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
 
         {/* BBQ Statistics */}
         <StatsSection userId={userProfile.id} />
+
+        {/* Session List - NEW */}
+        <div className="mt-6">
+          <UserSessionList
+            initialSessions={initialSessions}
+            userId={userProfile.id}
+            readOnly={true}
+          />
+        </div>
       </main>
     </div>
   )
