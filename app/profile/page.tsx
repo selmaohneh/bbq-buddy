@@ -164,7 +164,7 @@ export default function Profile() {
         </div>
 
         {/* Session List Section - Matches Home Page Width */}
-        <div className="w-full max-w-lg mx-auto px-4 mt-6">
+        <div className="w-full max-w-lg mx-auto mt-6">
           {isLoadingSessions ? (
             <div className="flex justify-center py-8">
               <div className="text-foreground/60">Loading sessions...</div>
