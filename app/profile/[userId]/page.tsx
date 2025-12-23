@@ -91,8 +91,8 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
           <StatsSection userId={userProfile.id} />
         </div>
 
-        {/* Session List Section - Full Width */}
-        <div className="w-full max-w-4xl mx-auto px-4 mt-6">
+        {/* Session List Section - Matches Home Page Width */}
+        <div className="w-full max-w-lg mx-auto px-4 mt-6">
           <UserSessionList
             initialSessions={initialSessions}
             userId={userProfile.id}
