@@ -76,3 +76,10 @@ export interface Session {
   images: string[]; // URLs
   created_at: string;
 }
+
+// Extended session with profile information for social feed
+export interface SessionWithProfile extends Session {
+  username: string;
+  avatar_url: string | null;
+  is_own_session: boolean;
+}

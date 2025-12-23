@@ -1,6 +1,6 @@
 'use client'
 
-import { Session } from '@/types/session'
+import { SessionWithProfile } from '@/types/session'
 import { SessionCard } from './SessionCard'
 import { useState } from 'react'
 import { getSessions } from '@/app/actions/get-sessions'
@@ -8,11 +8,11 @@ import Icon from '@mdi/react'
 import { mdiFire } from '@mdi/js'
 
 interface SessionListProps {
-  initialSessions: Session[]
+  initialSessions: SessionWithProfile[]
 }
 
 export function SessionList({ initialSessions }: SessionListProps) {
-  const [sessions, setSessions] = useState<Session[]>(initialSessions)
+  const [sessions, setSessions] = useState<SessionWithProfile[]>(initialSessions)
   const [page, setPage] = useState(1) // Next page to fetch
   const [hasMore, setHasMore] = useState(initialSessions.length >= 10) // PAGE_SIZE is 10
   const [loading, setLoading] = useState(false)
@@ -53,7 +53,11 @@ export function SessionList({ initialSessions }: SessionListProps) {
     <div className="space-y-4 w-full pb-20">
       <div className="grid gap-4">
         {sessions.map((session) => (
-          <SessionCard key={session.id} session={session} />
+          <SessionCard
+            key={session.id}
+            session={session}
+            readOnly={!session.is_own_session}
+          />
         ))}
       </div>
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Session } from '@/types/session'
+import { SessionWithProfile } from '@/types/session'
 import Image from 'next/image'
 import Link from 'next/link'
 import { WeatherTag } from '@/components/WeatherTag'
@@ -9,12 +9,14 @@ import { GrillTypeTag } from '@/components/GrillTypeTag'
 import { MeatTypeTag } from '@/components/MeatTypeTag'
 import { PeopleCountTag } from '@/components/PeopleCountTag'
 import ImageLightbox from './ImageLightbox'
+import Avatar from '@/components/Avatar'
 
 interface SessionCardProps {
-  session: Session
+  session: SessionWithProfile
+  readOnly?: boolean
 }
 
-export function SessionCard({ session }: SessionCardProps) {
+export function SessionCard({ session, readOnly = false }: SessionCardProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -61,6 +63,9 @@ export function SessionCard({ session }: SessionCardProps) {
       container.removeEventListener('scroll', handleScroll)
     }
   }, [session.images])
+
+  // Determine the link href based on readOnly
+  const href = readOnly ? `/sessions/${session.id}` : `/sessions/${session.id}/edit`
 
   return (
     <>
@@ -133,11 +138,20 @@ export function SessionCard({ session }: SessionCardProps) {
           )}
         </div>
 
-        {/* Content Section - Click to navigate to edit page */}
-        <Link
-          href={`/sessions/${session.id}/edit`}
-          className="flex flex-col p-4 gap-2 flex-1"
-        >
+        {/* Content Section - Click to navigate to edit or view page */}
+        <Link href={href} className="flex flex-col p-4 gap-2 flex-1">
+          {/* User Header - NEW */}
+          <div className="flex items-center gap-2 mb-1">
+            <Avatar uid={session.user_id} url={session.avatar_url} size={32} />
+            <Link
+              href={`/profile/${session.user_id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+            >
+              @{session.username}
+            </Link>
+          </div>
+
           <div className="flex items-start justify-between gap-2">
             <h3 className="font-bold text-lg text-foreground line-clamp-2 leading-tight">
               {session.title}
