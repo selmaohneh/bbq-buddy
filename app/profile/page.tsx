@@ -96,7 +96,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="w-full flex flex-col min-h-screen">
+    <div className="w-full flex flex-col min-h-screen p-4">
       <main className="flex-1 w-full flex flex-col">
         {/* Profile Info Section - Centered with max-w-md */}
         <div className="p-6 max-w-md mx-auto w-full flex flex-col gap-6">
