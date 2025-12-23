@@ -56,9 +56,11 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
 
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-1 p-6 max-w-md mx-auto w-full flex flex-col gap-6">
-        {/* Avatar Section (Readonly) */}
-        <div className="flex flex-col items-center gap-3">
+      <main className="flex-1 w-full flex flex-col">
+        {/* Profile Info Section - Centered with max-w-md */}
+        <div className="p-6 max-w-md mx-auto w-full flex flex-col gap-6">
+          {/* Avatar Section (Readonly) */}
+          <div className="flex flex-col items-center gap-3">
           {/* Avatar without onUpload prop = readonly mode */}
           <Avatar uid={userProfile.id} url={userProfile.avatar_url} size={120} />
 
@@ -85,11 +87,12 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
           />
         </div>
 
-        {/* BBQ Statistics */}
-        <StatsSection userId={userProfile.id} />
+          {/* BBQ Statistics */}
+          <StatsSection userId={userProfile.id} />
+        </div>
 
-        {/* Session List - NEW */}
-        <div className="mt-6">
+        {/* Session List Section - Full Width */}
+        <div className="w-full max-w-4xl mx-auto px-4 mt-6">
           <UserSessionList
             initialSessions={initialSessions}
             userId={userProfile.id}
