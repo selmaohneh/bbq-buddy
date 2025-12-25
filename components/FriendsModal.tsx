@@ -9,6 +9,7 @@ import { getFollowingList } from '@/app/actions/get-following-list'
 import { UserSearchResult as UserSearchResultType, FollowListItem } from '@/types/follow'
 import { UserSearchResult } from './UserSearchResult'
 import { FollowingListItem } from './FollowingListItem'
+import { useModalHistory } from '@/hooks/useModalHistory'
 
 interface FriendsModalProps {
   /** Whether the modal is open */
@@ -25,6 +26,9 @@ interface FriendsModalProps {
  */
 export function FriendsModal({ isOpen, onClose }: FriendsModalProps) {
   const router = useRouter()
+
+  // Integrate with browser history for back button support
+  useModalHistory(isOpen, onClose)
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('')

@@ -6,6 +6,7 @@ import Icon from '@mdi/react'
 import { mdiClose } from '@mdi/js'
 import { useSupabase } from '@/app/supabase-provider'
 import { toast } from 'sonner'
+import { useModalHistory } from '@/hooks/useModalHistory'
 
 interface SettingsModalProps {
   /** Whether the modal is open */
@@ -24,6 +25,9 @@ interface SettingsModalProps {
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { supabase } = useSupabase()
   const router = useRouter()
+
+  // Integrate with browser history for back button support
+  useModalHistory(isOpen, onClose)
 
   // Email change state
   const [newEmail, setNewEmail] = useState('')
