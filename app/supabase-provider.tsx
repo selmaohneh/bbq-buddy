@@ -18,7 +18,7 @@ export default function SupabaseProvider({
 }: {
   children: React.ReactNode
 }) {
-  // Create the client once per component mount
+  // Get the singleton Supabase client (createClient returns the same instance every time)
   const [supabase] = useState(() => createClient())
   const [session, setSession] = useState<MaybeSession>(null)
 
