@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback, FormEvent } from 'react'
+import { useEffect, useState, useCallback, FormEvent, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Icon from '@mdi/react'
 import { mdiClose } from '@mdi/js'
@@ -28,6 +28,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   // Email change state
   const [newEmail, setNewEmail] = useState('')
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false)
+  const isUpdatingEmailRef = useRef(false)
 
   // Password change state
   const [newPassword, setNewPassword] = useState('')
@@ -64,6 +65,11 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const handleUpdateEmail = async (e: FormEvent) => {
     e.preventDefault()
 
+    // Synchronous guard - prevents race conditions
+    if (isUpdatingEmailRef.current) {
+      return
+    }
+
     if (!newEmail.trim()) {
       toast.error('Please enter a new email address')
       return
@@ -76,6 +82,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       return
     }
 
+    // Set both ref (sync) and state (async)
+    isUpdatingEmailRef.current = true
     setIsUpdatingEmail(true)
 
     try {
@@ -96,6 +104,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     } catch (error: any) {
       toast.error(error.message || 'Failed to update email')
     } finally {
+      // Reset both ref and state
+      isUpdatingEmailRef.current = false
       setIsUpdatingEmail(false)
     }
   }
