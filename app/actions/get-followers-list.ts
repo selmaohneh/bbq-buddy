@@ -41,12 +41,10 @@ export async function getFollowersList(
   }
 
   // Filter out invalid profiles and map to FollowListItem format
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const followers = (data || [])
-    .filter(
-      (item): item is { follower_id: string; profiles: { id: string; username: string; avatar_url: string | null } } =>
-        item.profiles !== null && item.profiles.username !== null
-    )
-    .map((item) => ({
+    .filter((item: any) => item.profiles && item.profiles.username)
+    .map((item: any) => ({
       id: item.profiles.id,
       username: item.profiles.username,
       avatar_url: item.profiles.avatar_url,
@@ -61,8 +59,9 @@ export async function getFollowersList(
       .select('following_id')
       .eq('follower_id', user.id)
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const followingIds = new Set(
-      (followingData || []).map((f: { following_id: string }) => f.following_id)
+      (followingData || []).map((f: any) => f.following_id)
     )
 
     // Update is_following flag for each follower
