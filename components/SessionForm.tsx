@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useRef, useState } from 'react'
+import { useActionState, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Icon from '@mdi/react'
 import { mdiCamera, mdiImage } from '@mdi/js'
@@ -11,7 +11,8 @@ import { GrillTypeSelector } from '@/components/GrillTypeSelector'
 import { MeatTypeSelector } from '@/components/MeatTypeSelector'
 import { NumberControl } from '@/components/NumberControl'
 import { NotesSection } from '@/components/NotesSection'
-import { Session, MealTime, WeatherType, DEFAULT_NUMBER_OF_PEOPLE, MIN_NUMBER_OF_PEOPLE, MAX_IMAGE_FILE_SIZE, MAX_IMAGES_PER_SESSION } from '@/types/session'
+import { SortableImageGrid } from '@/components/SortableImageGrid'
+import { Session, MealTime, WeatherType, ImageItem, DEFAULT_NUMBER_OF_PEOPLE, MIN_NUMBER_OF_PEOPLE, MAX_IMAGE_FILE_SIZE, MAX_IMAGES_PER_SESSION } from '@/types/session'
 import { toast } from 'sonner'
 import { createClient } from '@/utils/supabase/client'
 import { validateImageFile, calculateRemainingSlots } from '@/utils/validation'
@@ -37,6 +38,9 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
   // State for new images to upload (compressed File objects + preview URLs)
   const [newFiles, setNewFiles] = useState<File[]>([])
   const [newFilePreviews, setNewFilePreviews] = useState<string[]>([])
+
+  // Unified state for drag & drop image reordering
+  const [imageItems, setImageItems] = useState<ImageItem[]>([])
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
@@ -78,6 +82,24 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
 
   const [isDeleting, setIsDeleting] = useState(false)
   const [isCompressing, setIsCompressing] = useState(false)
+
+  // Synchronize imageItems with dual-state arrays
+  useEffect(() => {
+    const items: ImageItem[] = [
+      ...existingImages.map((url) => ({
+        id: `existing-${url}`,
+        type: 'existing' as const,
+        url,
+      })),
+      ...newFilePreviews.map((url, idx) => ({
+        id: `new-${idx}`,
+        type: 'new' as const,
+        url,
+        file: newFiles[idx],
+      })),
+    ]
+    setImageItems(items)
+  }, [existingImages, newFilePreviews, newFiles])
 
   const compressImage = async (file: File): Promise<File> => {
     return new Promise((resolve) => {
@@ -216,15 +238,55 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
     setExistingImages((prev) => prev.filter((_, i) => i !== index))
   }
 
+  // Handle reordering of images via drag & drop
+  const handleReorder = (newOrder: ImageItem[]) => {
+    setImageItems(newOrder)
+
+    // Sync back to dual-state arrays
+    const orderedExisting = newOrder.filter(item => item.type === 'existing').map(item => item.url)
+    const orderedNewFiles = newOrder.filter(item => item.type === 'new').map(item => item.file!)
+    const orderedNewPreviews = newOrder.filter(item => item.type === 'new').map(item => item.url)
+
+    setExistingImages(orderedExisting)
+    setNewFiles(orderedNewFiles)
+    setNewFilePreviews(orderedNewPreviews)
+  }
+
+  // Handle removal of images from unified state
+  const handleRemoveImage = (id: string) => {
+    const item = imageItems.find(i => i.id === id)
+    if (!item) return
+
+    if (item.type === 'existing') {
+      setExistingImages(prev => prev.filter(url => url !== item.url))
+    } else {
+      const idx = newFilePreviews.indexOf(item.url)
+      if (idx !== -1) {
+        URL.revokeObjectURL(newFilePreviews[idx]) // Prevent memory leak
+        setNewFiles(prev => prev.filter((_, i) => i !== idx))
+        setNewFilePreviews(prev => prev.filter((_, i) => i !== idx))
+      }
+    }
+  }
+
   const clientAction = async (formData: FormData) => {
+    // Extract ordered arrays from imageItems to maintain user's desired order
+    const orderedExisting = imageItems
+      .filter(item => item.type === 'existing')
+      .map(item => item.url)
+
+    const orderedNewFiles = imageItems
+      .filter(item => item.type === 'new')
+      .map(item => item.file!)
+
     // Defensive check: Validate total image count
-    const totalImages = existingImages.length + newFiles.length
+    const totalImages = orderedExisting.length + orderedNewFiles.length
     if (totalImages > MAX_IMAGES_PER_SESSION) {
       toast.error(`Maximum ${MAX_IMAGES_PER_SESSION} images allowed per session`)
       return
     }
 
-    if (newFiles.length > 0) {
+    if (orderedNewFiles.length > 0) {
       setIsUploading(true)
 
       try {
@@ -237,11 +299,11 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
           return
         }
 
-        // Upload all new images to Supabase Storage
+        // Upload all new images to Supabase Storage in order
         const uploadedUrls: string[] = []
 
-        for (let i = 0; i < newFiles.length; i++) {
-          const file = newFiles[i]
+        for (let i = 0; i < orderedNewFiles.length; i++) {
+          const file = orderedNewFiles[i]
           const fileExt = file.name.split('.').pop()
           const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
 
@@ -263,7 +325,7 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
           uploadedUrls.push(publicUrl)
         }
 
-        // Append uploaded image URLs
+        // Append uploaded image URLs in order
         uploadedUrls.forEach((url) => {
           formData.append('newImageUrls', url)
         })
@@ -277,8 +339,8 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
       setIsUploading(false)
     }
 
-    // Append list of existing images to keep
-    existingImages.forEach((url) => {
+    // Append list of existing images to keep (in order)
+    orderedExisting.forEach((url) => {
       formData.append('keptImages', url)
     })
 
@@ -479,52 +541,13 @@ export function SessionForm({ initialData, action, deleteAction }: SessionFormPr
               {existingImages.length + newFiles.length} / {MAX_IMAGES_PER_SESSION} images
             </div>
 
-            {/* Preview Grid */}
-            {(existingImages.length > 0 || newFilePreviews.length > 0) && (
-              <div className="grid grid-cols-3 gap-2 mt-2">
-                {/* Existing Images */}
-                {existingImages.map((url, index) => (
-                  <div key={url} className="relative aspect-square rounded-lg overflow-hidden group bg-input">
-                    <Image
-                      src={url}
-                      alt={`Existing ${index}`}
-                      fill
-                      className="object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeExistingImage(index)}
-                      className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-red-500 transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-
-                {/* New Files (Local Previews) */}
-                {newFilePreviews.map((url, index) => (
-                  <div key={url} className="relative aspect-square rounded-lg overflow-hidden group bg-input">
-                    <Image
-                      src={url}
-                      alt={`New ${index}`}
-                      fill
-                      className="object-cover"
-                    />
-                     <div className="absolute bottom-1 left-1 bg-green-500/80 text-white text-[10px] px-1 rounded">New</div>
-                    <button
-                      type="button"
-                      onClick={() => removeNewFile(index)}
-                      className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-red-500 transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
+            {/* Preview Grid with Drag & Drop */}
+            {imageItems.length > 0 && (
+              <SortableImageGrid
+                items={imageItems}
+                onReorder={handleReorder}
+                onRemove={handleRemoveImage}
+              />
             )}
           </div>
 
