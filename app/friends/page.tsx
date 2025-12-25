@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Icon from '@mdi/react'
-import { mdiMagnify, mdiAccountGroup, mdiArrowLeft } from '@mdi/js'
+import { mdiMagnify, mdiAccountGroup } from '@mdi/js'
 import { searchUsers } from '@/app/actions/search-users'
 import { getFollowingList } from '@/app/actions/get-following-list'
 import { UserSearchResult as UserSearchResultType, FollowListItem } from '@/types/follow'
@@ -87,18 +87,9 @@ export default function FriendsPage() {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-primary text-white px-4 py-4 shadow-lg">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.back()}
-            className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
-            aria-label="Go back"
-          >
-            <Icon path={mdiArrowLeft} size={1} />
-          </button>
-          <h1 className="text-xl font-bold">Find a BBQ Buddy</h1>
-        </div>
-      </div>
+      <header className="p-4 border-b border-foreground/10 bg-background sticky top-0 z-10">
+        <h1 className="text-xl font-bold text-foreground">Find a BBQ Buddy</h1>
+      </header>
 
       {/* Content */}
       <div className="max-w-2xl mx-auto px-4 py-6">
