@@ -1,33 +1,19 @@
 'use client'
 
-import { useEffect, useState, useCallback, FormEvent, useRef } from 'react'
+import { useState, FormEvent, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import Icon from '@mdi/react'
-import { mdiClose } from '@mdi/js'
 import { useSupabase } from '@/app/supabase-provider'
 import { toast } from 'sonner'
-import { useModalHistory } from '@/hooks/useModalHistory'
-
-interface SettingsModalProps {
-  /** Whether the modal is open */
-  isOpen: boolean
-  /** Callback to close the modal */
-  onClose: () => void
-}
 
 /**
- * SettingsModal Component
+ * Settings Page
  *
- * Displays a modal overlay for account settings including email change,
+ * Full page for account settings including email change,
  * password change, and logout functionality.
- * Supports keyboard navigation (Escape to close) and click-outside-to-dismiss.
  */
-export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export default function SettingsPage() {
   const { supabase } = useSupabase()
   const router = useRouter()
-
-  // Integrate with browser history for back button support
-  useModalHistory(isOpen, onClose)
 
   // Email change state
   const [newEmail, setNewEmail] = useState('')
@@ -44,36 +30,13 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   // Logout state
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
-  // Handle escape key press
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose()
-      }
-    },
-    [onClose]
-  )
-
-  // Set up escape key listener and prevent body scroll
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = 'hidden'
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = ''
-    }
-  }, [isOpen, handleKeyDown])
-
   // Handle email update
   const handleUpdateEmail = async (e: FormEvent) => {
     e.preventDefault()
 
     // Request deduplication: if there's already a request in progress, ignore this one
     if (emailUpdatePromiseRef.current) {
-      console.warn('[SettingsModal] Email update already in progress, ignoring duplicate request')
+      console.warn('[SettingsPage] Email update already in progress, ignoring duplicate request')
       return
     }
 
@@ -108,7 +71,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
         toast.success('Confirmation email sent! Check your inbox and click the link to verify your new email.')
         setNewEmail('')
-        onClose()
       } catch (error: any) {
         toast.error(error.message || 'Failed to update email')
       } finally {
@@ -154,7 +116,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       toast.success('Password updated successfully!')
       setNewPassword('')
       setConfirmPassword('')
-      onClose()
     } catch (error: any) {
       toast.error(error.message || 'Failed to update password')
     } finally {
@@ -180,46 +141,20 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     }
   }
 
-  if (!isOpen) return null
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="settings-modal-title"
-    >
-      {/* Overlay backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+    <div className="min-h-screen bg-background pb-20">
+      {/* Header */}
+      <header className="p-4 border-b border-foreground/10 bg-background sticky top-0 z-10">
+        <h1 className="text-xl font-bold text-foreground">Account Settings</h1>
+      </header>
 
-      {/* Modal content */}
-      <div className="relative bg-card border border-border rounded-2xl p-6 max-w-md w-full max-h-[80vh] shadow-2xl animate-slide-up flex flex-col overflow-y-auto">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-foreground/40 hover:text-foreground/80 transition-colors p-2 -m-2 rounded-full hover:bg-foreground/5"
-          aria-label="Close modal"
-        >
-          <Icon path={mdiClose} size={0.8} />
-        </button>
-
-        {/* Modal title */}
-        <h2
-          id="settings-modal-title"
-          className="text-xl font-bold text-foreground pr-8 mb-6"
-        >
-          Account Settings
-        </h2>
-
+      {/* Content */}
+      <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Email Change Section */}
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold text-foreground/60 mb-3">
+        <div className="mb-8 bg-card border border-border rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-foreground/60 mb-4">
             Change Email
-          </h3>
+          </h2>
           <form onSubmit={handleUpdateEmail} className="space-y-3">
             <input
               type="email"
@@ -227,12 +162,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               disabled={isUpdatingEmail}
-              className="w-full px-4 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <button
               type="submit"
               disabled={isUpdatingEmail}
-              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg px-4 py-2.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg px-4 py-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isUpdatingEmail ? (
                 <>
@@ -263,19 +198,16 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               )}
             </button>
           </form>
-          <p className="text-xs text-foreground/50 mt-2">
+          <p className="text-xs text-foreground/50 mt-3">
             You'll receive a confirmation email to verify the change.
           </p>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-border mb-6"></div>
-
         {/* Password Change Section */}
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold text-foreground/60 mb-3">
+        <div className="mb-8 bg-card border border-border rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-foreground/60 mb-4">
             Change Password
-          </h3>
+          </h2>
           <form onSubmit={handleUpdatePassword} className="space-y-3">
             <input
               type="password"
@@ -283,7 +215,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               disabled={isUpdatingPassword}
-              className="w-full px-4 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <input
               type="password"
@@ -291,12 +223,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={isUpdatingPassword}
-              className="w-full px-4 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <button
               type="submit"
               disabled={isUpdatingPassword}
-              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg px-4 py-2.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg px-4 py-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isUpdatingPassword ? (
                 <>
@@ -329,18 +261,15 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           </form>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-border mb-6"></div>
-
         {/* Logout Section */}
-        <div>
-          <h3 className="text-sm font-semibold text-foreground/60 mb-3">
+        <div className="bg-card border border-border rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-foreground/60 mb-4">
             Logout
-          </h3>
+          </h2>
           <button
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg px-4 py-2.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg px-4 py-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoggingOut ? (
               <>
