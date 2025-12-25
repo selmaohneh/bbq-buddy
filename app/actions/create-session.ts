@@ -82,11 +82,14 @@ export async function createSession(prevState: any, formData: FormData) {
     return { message: 'Title and Date are required' }
   }
 
-  // Validate date is not in the future
-  const selectedDate = new Date(date)
+  // Validate date is not in the future (timezone-agnostic comparison)
+  // Parse date string directly to avoid timezone issues
+  const [year, month, day] = date.split('-').map(Number)
+  const selectedDate = new Date(year, month - 1, day) // month is 0-indexed
   const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  if (selectedDate > today) {
+  const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+
+  if (selectedDate > todayDate) {
     return { message: 'Date cannot be in the future' }
   }
 
