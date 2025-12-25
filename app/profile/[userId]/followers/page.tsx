@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Icon from '@mdi/react'
-import { mdiArrowLeft, mdiAccountGroup } from '@mdi/js'
+import { mdiAccountGroup } from '@mdi/js'
 import { getFollowersList } from '@/app/actions/get-followers-list'
 import { getUserProfile } from '@/app/actions/get-user-profile'
 import { FollowListItem } from '@/types/follow'
@@ -63,31 +63,13 @@ export default function FollowersPage({ params }: FollowersPageProps) {
     router.push(`/profile/${clickedUserId}`)
   }
 
-  // Handle back button
-  const handleBack = () => {
-    if (userId) {
-      router.push(`/profile/${userId}`)
-    } else {
-      router.back()
-    }
-  }
-
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="p-4 border-b border-foreground/10 bg-background sticky top-0 z-10">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleBack}
-            className="p-2 -ml-2 hover:bg-foreground/5 rounded-lg transition-colors"
-            aria-label="Go back"
-          >
-            <Icon path={mdiArrowLeft} size={1} className="text-foreground" />
-          </button>
-          <h1 className="text-xl font-bold text-foreground">
-            {targetUsername ? `@${targetUsername}'s Followers` : 'Followers'}
-          </h1>
-        </div>
+        <h1 className="text-xl font-bold text-foreground">
+          {targetUsername ? `@${targetUsername}'s Followers` : 'Followers'}
+        </h1>
       </header>
 
       {/* Content */}
