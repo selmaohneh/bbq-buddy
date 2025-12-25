@@ -79,9 +79,14 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     setIsUpdatingEmail(true)
 
     try {
-      const { error } = await supabase.auth.updateUser({
-        email: newEmail,
-      })
+      const { error } = await supabase.auth.updateUser(
+        {
+          email: newEmail,
+        },
+        {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        }
+      )
 
       if (error) throw error
 
