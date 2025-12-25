@@ -83,3 +83,11 @@ export interface SessionWithProfile extends Session {
   avatar_url: string | null;
   is_own_session: boolean;
 }
+
+// Image item for drag & drop reordering
+export interface ImageItem {
+  id: string;              // Unique ID for dnd-kit tracking
+  type: 'existing' | 'new'; // Discriminator for state sync
+  url: string;             // Display URL (public or blob)
+  file?: File;             // Only present for 'new' type
+}
