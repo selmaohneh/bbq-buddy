@@ -28,7 +28,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   // Email change state
   const [newEmail, setNewEmail] = useState('')
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false)
-  const isUpdatingEmailRef = useRef(false)
+
+  // Request deduplication: tracks in-flight email update promise
+  const emailUpdatePromiseRef = useRef<Promise<void> | null>(null)
 
   // Password change state
   const [newPassword, setNewPassword] = useState('')
@@ -65,8 +67,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const handleUpdateEmail = async (e: FormEvent) => {
     e.preventDefault()
 
-    // Synchronous guard - prevents race conditions
-    if (isUpdatingEmailRef.current) {
+    // Request deduplication: if there's already a request in progress, ignore this one
+    if (emailUpdatePromiseRef.current) {
+      console.warn('[SettingsModal] Email update already in progress, ignoring duplicate request')
       return
     }
 
@@ -82,32 +85,37 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       return
     }
 
-    // Set both ref (sync) and state (async)
-    isUpdatingEmailRef.current = true
+    // Set UI state
     setIsUpdatingEmail(true)
 
-    try {
-      const { error } = await supabase.auth.updateUser(
-        {
-          email: newEmail,
-        },
-        {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        }
-      )
+    // Create and store the update promise for deduplication
+    const updatePromise = (async () => {
+      try {
+        const { error } = await supabase.auth.updateUser(
+          {
+            email: newEmail,
+          },
+          {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          }
+        )
 
-      if (error) throw error
+        if (error) throw error
 
-      toast.success('Confirmation email sent! Check your inbox and click the link to verify your new email.')
-      setNewEmail('')
-      onClose()
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update email')
-    } finally {
-      // Reset both ref and state
-      isUpdatingEmailRef.current = false
-      setIsUpdatingEmail(false)
-    }
+        toast.success('Confirmation email sent! Check your inbox and click the link to verify your new email.')
+        setNewEmail('')
+        onClose()
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to update email')
+      } finally {
+        // Clear the promise ref and reset UI state
+        emailUpdatePromiseRef.current = null
+        setIsUpdatingEmail(false)
+      }
+    })()
+
+    // Store the promise to prevent duplicate requests
+    emailUpdatePromiseRef.current = updatePromise
   }
 
   // Handle password update
