@@ -12,6 +12,7 @@ import { getUserSessions } from '@/app/actions/get-user-sessions'
 import { UserSessionList } from '@/components/UserSessionList'
 import FloatingActionButton from '@/components/FloatingActionButton'
 import { SessionWithProfile } from '@/types/session'
+import { SessionCardSkeleton } from '@/components/SessionCardSkeleton'
 
 export default function Profile() {
   const { supabase, session } = useSupabase()
@@ -166,8 +167,8 @@ export default function Profile() {
         {/* Session List Section - Matches Home Page Width */}
         <div className="w-full max-w-lg mx-auto mt-6">
           {isLoadingSessions ? (
-            <div className="flex justify-center py-8">
-              <div className="text-foreground/60">Loading sessions...</div>
+            <div className="flex flex-col gap-4 pb-20">
+              <SessionCardSkeleton count={3} />
             </div>
           ) : (
             <UserSessionList

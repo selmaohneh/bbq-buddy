@@ -146,7 +146,7 @@ export function FriendsModal({ isOpen, onClose }: FriendsModalProps) {
           id="friends-modal-title"
           className="text-xl font-bold text-foreground pr-8 mb-4"
         >
-          Find Friends
+          Find a BBQ Buddy
         </h2>
 
         {/* Search input */}
