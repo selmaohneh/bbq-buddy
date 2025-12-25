@@ -5,19 +5,22 @@ import { useSupabase } from '@/app/supabase-provider'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Icon from '@mdi/react'
-import { mdiAccountMultiple } from '@mdi/js'
+import { mdiAccountMultiple, mdiCog } from '@mdi/js'
 import Avatar from './Avatar'
 import { useProfile } from './ProfileProvider'
 import { FriendsModal } from './FriendsModal'
+import { SettingsModal } from './SettingsModal'
 
 export default function AuthButton() {
   const { session } = useSupabase()
   const { profile } = useProfile()
   const pathname = usePathname()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
   const isOnboardingPage = pathname === '/onboarding'
   const isProfilePage = pathname?.startsWith('/profile')
+  const isOwnProfile = pathname === '/profile'
 
   if (session && !isOnboardingPage) {
     return (
@@ -34,6 +37,17 @@ export default function AuthButton() {
             </button>
           )}
 
+          {/* Settings Icon - shown only on own profile page */}
+          {isOwnProfile && (
+            <button
+              onClick={() => setIsSettingsModalOpen(true)}
+              className="p-2 rounded-full hover:bg-white/10 transition-colors"
+              aria-label="Account settings"
+            >
+              <Icon path={mdiCog} size={0.9} className="text-white" />
+            </button>
+          )}
+
           {/* Profile Avatar Link */}
           <Link href="/profile" className="flex items-center gap-2">
             <div className="cursor-pointer hover:opacity-80 transition-opacity">
@@ -44,6 +58,12 @@ export default function AuthButton() {
 
         {/* Friends Modal */}
         <FriendsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+        {/* Settings Modal */}
+        <SettingsModal
+          isOpen={isSettingsModalOpen}
+          onClose={() => setIsSettingsModalOpen(false)}
+        />
       </>
     )
   }
