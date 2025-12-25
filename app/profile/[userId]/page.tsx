@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { getUserProfile } from '@/app/actions/get-user-profile'
 import { getUserSessions } from '@/app/actions/get-user-sessions'
 import Avatar from '@/components/Avatar'
@@ -74,10 +75,13 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
             </p>
 
             {/* Follower Count */}
-            <p className="text-sm text-foreground/60 mt-1">
+            <Link
+              href={`/profile/${userProfile.id}/followers`}
+              className="text-sm text-foreground/60 mt-1 hover:text-foreground/80 transition-colors cursor-pointer underline-offset-4 hover:underline block"
+            >
               {userProfile.follower_count}{' '}
               {userProfile.follower_count === 1 ? 'follower' : 'followers'}
-            </p>
+            </Link>
           </div>
 
           {/* Follow/Unfollow Button */}

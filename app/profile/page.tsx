@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useSupabase } from '@/app/supabase-provider'
 import Avatar from '@/components/Avatar'
 import { useProfile } from '@/components/ProfileProvider'
@@ -147,15 +148,16 @@ export default function Profile() {
                 BBQ Buddy since {new Date(session.user.created_at).getFullYear()}
               </p>
               {/* Follower Count */}
-              <p className="text-sm text-foreground/60 mt-1">
-                {isLoadingFollowers ? (
-                  <span className="opacity-50">Loading...</span>
-                ) : (
-                  <>
-                    {followerCount} {followerCount === 1 ? 'follower' : 'followers'}
-                  </>
-                )}
-              </p>
+              {isLoadingFollowers ? (
+                <p className="text-sm text-foreground/60 mt-1 opacity-50">Loading...</p>
+              ) : (
+                <Link
+                  href={`/profile/${session.user.id}/followers`}
+                  className="text-sm text-foreground/60 mt-1 hover:text-foreground/80 transition-colors cursor-pointer underline-offset-4 hover:underline block"
+                >
+                  {followerCount} {followerCount === 1 ? 'follower' : 'followers'}
+                </Link>
+              )}
             </div>
           )}
         </div>
