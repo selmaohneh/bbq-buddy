@@ -4,6 +4,8 @@ import { useState, useTransition } from 'react'
 import { yummySession } from '@/app/actions/yummy-session'
 import { unyummySession } from '@/app/actions/unyummy-session'
 import { toast } from 'sonner'
+import Icon from '@mdi/react'
+import { mdiFire } from '@mdi/js'
 
 interface YummyButtonProps {
   sessionId: string
@@ -16,15 +18,19 @@ interface YummyButtonProps {
 /**
  * YummyButton Component
  *
- * Displays a yummy button with flame icon and count.
+ * Displays a yummy button with flame icon, count, and label text.
  * Handles yummy/unyummy actions with optimistic updates.
  * Can trigger modal to show list of users who yummied.
  *
+ * UI States:
+ * - 0 yummies: "🔥 Yummy"
+ * - 1 yummy: "🔥 1 Yummy"
+ * - 2+ yummies: "🔥 42 Yummies"
+ *
  * Click behavior:
- * - Not yummied: Click to yummy
- * - Already yummied: Click to show list
- * - Count (if > 0): Click to show list
- * - Own session: Disabled (can still view list via count)
+ * - Not yummied & can yummy: Click to yummy the session
+ * - Already yummied: Click to show list of who yummied
+ * - Own session: Button disabled, but shows count and list (if count > 0)
  */
 export function YummyButton({
   sessionId,
@@ -50,13 +56,6 @@ export function YummyButton({
 
     // Otherwise, yummy the session
     handleYummy()
-  }
-
-  const handleCountClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent SessionCard navigation
-    if (yummyCount > 0) {
-      onShowList()
-    }
   }
 
   const handleYummy = () => {
@@ -89,6 +88,12 @@ export function YummyButton({
     })
   }
 
+  // Get label text with proper pluralization
+  const getLabel = () => {
+    if (yummyCount === 0) return 'Yummy'
+    return yummyCount === 1 ? 'Yummy' : 'Yummies'
+  }
+
   return (
     <div className="flex items-center gap-2">
       {/* Yummy Button */}
@@ -113,53 +118,16 @@ export function YummyButton({
             : 'Cannot yummy your own session'
         }
       >
-        {/* Flame Icon - outlined or filled */}
-        {hasYummied ? (
-          // Filled flame icon
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              fillRule="evenodd"
-              d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152-.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z"
-              clipRule="evenodd"
-            />
-          </svg>
-        ) : (
-          // Outlined flame icon
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z"
-            />
-          </svg>
+        {/* Flame Icon */}
+        <Icon path={mdiFire} size={0.85} className="shrink-0" />
+
+        {/* Count (if > 0) */}
+        {yummyCount > 0 && (
+          <span className="text-sm font-semibold">{yummyCount}</span>
         )}
 
-        {/* Yummy Count - clickable to show list */}
-        {yummyCount > 0 && (
-          <span
-            onClick={handleCountClick}
-            className="text-sm font-semibold cursor-pointer hover:underline"
-          >
-            {yummyCount}
-          </span>
-        )}
+        {/* Label Text */}
+        <span className="text-sm font-medium">{getLabel()}</span>
 
         {/* Loading spinner overlay */}
         {isPending && (
