@@ -82,6 +82,9 @@ export interface SessionWithProfile extends Session {
   username: string;
   avatar_url: string | null;
   is_own_session: boolean;
+  yummy_count: number;
+  has_yummied: boolean;
+  can_yummy: boolean;
 }
 
 // Image item for drag & drop reordering

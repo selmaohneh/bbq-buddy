@@ -10,6 +10,8 @@ import { MeatTypeTag } from '@/components/MeatTypeTag'
 import { PeopleCountTag } from '@/components/PeopleCountTag'
 import ImageLightbox from './ImageLightbox'
 import Avatar from '@/components/Avatar'
+import { YummyButton } from '@/components/YummyButton'
+import { YummiesListModal } from '@/components/YummiesListModal'
 
 interface SessionCardProps {
   session: SessionWithProfile
@@ -19,6 +21,7 @@ interface SessionCardProps {
 export function SessionCard({ session, readOnly = false }: SessionCardProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+  const [yummiesModalSessionId, setYummiesModalSessionId] = useState<string | null>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [currentScrollIndex, setCurrentScrollIndex] = useState(0)
   const mainImage = session.images?.[0]
@@ -103,6 +106,17 @@ export function SessionCard({ session, readOnly = false }: SessionCardProps) {
         </span>
         <span className="opacity-50">-</span>
         <PeopleCountTag count={session.number_of_people} />
+      </div>
+
+      {/* Yummy button */}
+      <div className="mt-2">
+        <YummyButton
+          sessionId={session.id}
+          initialYummyCount={session.yummy_count}
+          initialHasYummied={session.has_yummied}
+          canYummy={session.can_yummy}
+          onShowList={() => setYummiesModalSessionId(session.id)}
+        />
       </div>
 
       {/* Tags area */}
@@ -211,6 +225,12 @@ export function SessionCard({ session, readOnly = false }: SessionCardProps) {
           onClose={() => setLightboxOpen(false)}
         />
       )}
+
+      {/* Yummies List Modal */}
+      <YummiesListModal
+        sessionId={yummiesModalSessionId}
+        onClose={() => setYummiesModalSessionId(null)}
+      />
     </>
   )
 }

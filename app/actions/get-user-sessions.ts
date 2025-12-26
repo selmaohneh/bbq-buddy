@@ -80,16 +80,54 @@ export async function getUserSessions(
     return []
   }
 
-  // Flatten the profile data into the session object
+  if (!data || data.length === 0) {
+    return []
+  }
+
+  // Extract session IDs for batch yummy queries
+  const sessionIds = (data as any[]).map((s: any) => s.id)
+
+  // Batch fetch yummy counts for all sessions (optimized - avoids N+1 query problem)
+  const { data: yummyCounts } = await supabase
+    .from('yummies')
+    .select('session_id')
+    .in('session_id', sessionIds)
+
+  // Aggregate counts in memory
+  const yummyCountMap = new Map<string, number>()
+  yummyCounts?.forEach((yummy: any) => {
+    const count = yummyCountMap.get(yummy.session_id) || 0
+    yummyCountMap.set(yummy.session_id, count + 1)
+  })
+
+  // Batch fetch user's yummies for these sessions (if user is authenticated)
+  let userYummySet = new Set<string>()
+  if (user) {
+    const { data: userYummies } = await supabase
+      .from('yummies')
+      .select('session_id')
+      .in('session_id', sessionIds)
+      .eq('user_id', user.id)
+
+    userYummySet = new Set(userYummies?.map((y: any) => y.session_id))
+  }
+
+  // Flatten the profile data into the session object and add yummy data
   const sessionsWithProfile: SessionWithProfile[] = (data as any[]).map(
-    (session) => ({
-      ...session,
-      username: session.profiles?.username || 'Unknown',
-      avatar_url: session.profiles?.avatar_url || null,
-      is_own_session: user?.id === session.user_id,
-      // Remove the nested profiles object
-      profiles: undefined,
-    })
+    (session) => {
+      const isOwnSession = user?.id === session.user_id
+      return {
+        ...session,
+        username: session.profiles?.username || 'Unknown',
+        avatar_url: session.profiles?.avatar_url || null,
+        is_own_session: isOwnSession,
+        yummy_count: yummyCountMap.get(session.id) || 0,
+        has_yummied: userYummySet.has(session.id),
+        can_yummy: !isOwnSession && !!user,
+        // Remove the nested profiles object
+        profiles: undefined,
+      }
+    }
   )
 
   // Apply custom meal_time sorting
