@@ -44,7 +44,8 @@ export function YummyButton({
   const [isPending, startTransition] = useTransition()
 
   const handleButtonClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent SessionCard navigation
+    e.stopPropagation() // Prevent event bubbling to parent elements
+    e.preventDefault()  // Prevent Link navigation in SessionCard
 
     // If can't yummy (own session) or already yummied, show list
     if (!canYummy || hasYummied) {
@@ -103,11 +104,11 @@ export function YummyButton({
         className={`
           flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors relative
           ${
-            hasYummied
+            hasYummied || yummyCount > 0
               ? 'bg-primary/10 text-primary hover:bg-primary/20'
               : 'bg-foreground/5 text-foreground/60 hover:bg-foreground/10 hover:text-foreground'
           }
-          ${!canYummy ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+          ${!canYummy ? 'cursor-default' : 'cursor-pointer'}
           disabled:opacity-50 disabled:cursor-not-allowed
         `}
         aria-label={
@@ -115,6 +116,8 @@ export function YummyButton({
             ? hasYummied
               ? 'See who yummied this'
               : 'Yummy this session'
+            : yummyCount > 0
+            ? 'See who yummied this'
             : 'Cannot yummy your own session'
         }
       >
