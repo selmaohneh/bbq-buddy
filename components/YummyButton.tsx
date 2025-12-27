@@ -16,21 +16,20 @@ interface YummyButtonProps {
 }
 
 /**
- * YummyButton Component
+ * YummyButton Component - Reddit Upvote Style
  *
- * Displays a yummy button with flame icon, count, and label text.
- * Handles yummy/unyummy actions with optimistic updates.
- * Can trigger modal to show list of users who yummied.
+ * Displays a compact chip with two clickable sections:
+ * - Left: Flame icon (toggles yummy on/off)
+ * - Right: Count number (shows list of who yummied)
  *
- * UI States:
- * - 0 yummies: "🔥 Yummy"
- * - 1 yummy: "🔥 1 Yummy"
- * - 2+ yummies: "🔥 42 Yummies"
+ * Visual States:
+ * - Not yummied: Gray/muted colors
+ * - Yummied: Red/primary colors
  *
- * Click behavior:
- * - Not yummied & can yummy: Click to yummy the session
- * - Already yummied: Click to show list of who yummied
- * - Own session: Button disabled, but shows count and list (if count > 0)
+ * Click Behaviors:
+ * - Flame icon: Toggle yummy (add if not yummied, remove if yummied)
+ * - Count: Show list of users who yummied
+ * - Own sessions: Flame shows message, count still shows list
  */
 export function YummyButton({
   sessionId,
@@ -43,24 +42,35 @@ export function YummyButton({
   const [hasYummied, setHasYummied] = useState(initialHasYummied)
   const [isPending, startTransition] = useTransition()
 
-  const handleButtonClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent event bubbling to parent elements
-    e.preventDefault()  // Prevent Link navigation in SessionCard
+  // Handle flame icon click - Toggle yummy
+  const handleToggleYummy = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
 
-    // If can't yummy (own session) or already yummied, show list
-    if (!canYummy || hasYummied) {
-      if (yummyCount > 0) {
-        onShowList()
-      }
+    // Own session - show informative message
+    if (!canYummy && !hasYummied) {
+      toast.info('You cannot yummy your own session')
       return
     }
 
-    // Otherwise, yummy the session
-    handleYummy()
+    if (hasYummied) {
+      // Remove yummy (unyummy)
+      handleUnyummy()
+    } else {
+      // Add yummy
+      handleYummy()
+    }
   }
 
+  // Handle count click - Show list
+  const handleShowList = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    onShowList()
+  }
+
+  // Add yummy with optimistic update
   const handleYummy = () => {
-    // Store previous state for potential revert
     const previousCount = yummyCount
     const previousHasYummied = hasYummied
 
@@ -68,7 +78,6 @@ export function YummyButton({
     setYummyCount(yummyCount + 1)
     setHasYummied(true)
 
-    // Perform async action
     startTransition(async () => {
       try {
         const result = await yummySession(sessionId)
@@ -89,53 +98,76 @@ export function YummyButton({
     })
   }
 
-  // Get label text with proper pluralization
-  const getLabel = () => {
-    if (yummyCount === 0) return 'Yummy'
-    return yummyCount === 1 ? 'Yummy' : 'Yummies'
+  // Remove yummy with optimistic update
+  const handleUnyummy = () => {
+    const previousCount = yummyCount
+    const previousHasYummied = hasYummied
+
+    // Optimistic update
+    setYummyCount(yummyCount - 1)
+    setHasYummied(false)
+
+    startTransition(async () => {
+      try {
+        const result = await unyummySession(sessionId)
+
+        if (!result.success) {
+          // Revert on error
+          setYummyCount(previousCount)
+          setHasYummied(previousHasYummied)
+          toast.error(result.error || 'Failed to remove yummy')
+        }
+      } catch (error) {
+        // Revert on exception
+        setYummyCount(previousCount)
+        setHasYummied(previousHasYummied)
+        toast.error('An error occurred')
+        console.error('Unyummy error:', error)
+      }
+    })
   }
 
+  // Determine chip styling based on state
+  const chipBgColor = hasYummied
+    ? 'bg-primary/10 border-primary/20'
+    : 'bg-foreground/5 border-foreground/10'
+
+  const textColor = hasYummied ? 'text-primary' : 'text-foreground/60'
+
+  const separatorColor = hasYummied ? 'bg-primary/30' : 'bg-foreground/20'
+
+  const hoverBg = hasYummied
+    ? 'hover:bg-primary/20'
+    : 'hover:bg-foreground/10'
+
   return (
-    <div className="flex items-center gap-2">
-      {/* Yummy Button */}
+    <div
+      className={`inline-flex items-center rounded-full border overflow-hidden ${chipBgColor} ${textColor}`}
+    >
+      {/* Left section: Flame icon toggle */}
       <button
-        onClick={handleButtonClick}
+        onClick={handleToggleYummy}
         disabled={isPending}
         className={`
-          flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors relative
-          ${
-            hasYummied || yummyCount > 0
-              ? 'bg-primary/10 text-primary hover:bg-primary/20'
-              : 'bg-foreground/5 text-foreground/60 hover:bg-foreground/10 hover:text-foreground'
-          }
-          ${!canYummy ? 'cursor-default' : 'cursor-pointer'}
-          disabled:opacity-50 disabled:cursor-not-allowed
+          flex items-center justify-center px-2.5 py-1.5 transition-colors relative
+          ${hoverBg}
+          ${!canYummy && !hasYummied ? 'cursor-default' : 'cursor-pointer'}
+          disabled:opacity-50
         `}
         aria-label={
-          canYummy
+          canYummy || hasYummied
             ? hasYummied
-              ? 'See who yummied this'
+              ? 'Remove yummy'
               : 'Yummy this session'
-            : yummyCount > 0
-            ? 'See who yummied this'
             : 'Cannot yummy your own session'
         }
       >
-        {/* Flame Icon */}
-        <Icon path={mdiFire} size={0.85} className="shrink-0" />
+        <Icon path={mdiFire} size={0.6} className="shrink-0" />
 
-        {/* Count (if > 0) */}
-        {yummyCount > 0 && (
-          <span className="text-sm font-semibold">{yummyCount}</span>
-        )}
-
-        {/* Label Text */}
-        <span className="text-sm font-medium">{getLabel()}</span>
-
-        {/* Loading spinner overlay */}
+        {/* Loading spinner overlay for icon section */}
         {isPending && (
           <svg
-            className="animate-spin h-4 w-4 absolute"
+            className="animate-spin h-3 w-3 absolute"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -155,6 +187,24 @@ export function YummyButton({
             ></path>
           </svg>
         )}
+      </button>
+
+      {/* Vertical separator */}
+      <div className={`w-px h-4 ${separatorColor}`} />
+
+      {/* Right section: Count */}
+      <button
+        onClick={handleShowList}
+        disabled={isPending}
+        className={`
+          flex items-center justify-center px-2.5 py-1.5 min-w-[2rem] transition-colors
+          ${hoverBg}
+          cursor-pointer
+          disabled:opacity-50
+        `}
+        aria-label="See who yummied this"
+      >
+        <span className="text-sm font-semibold">{yummyCount}</span>
       </button>
     </div>
   )
