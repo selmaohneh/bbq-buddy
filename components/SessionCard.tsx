@@ -108,17 +108,6 @@ export function SessionCard({ session, readOnly = false }: SessionCardProps) {
         <PeopleCountTag count={session.number_of_people} />
       </div>
 
-      {/* Yummy button */}
-      <div className="mt-2">
-        <YummyButton
-          sessionId={session.id}
-          initialYummyCount={session.yummy_count}
-          initialHasYummied={session.has_yummied}
-          canYummy={session.can_yummy}
-          onShowList={() => setYummiesModalSessionId(session.id)}
-        />
-      </div>
-
       {/* Tags area */}
       {(session.meal_time ||
         (session.weather_types && session.weather_types.length > 0) ||
@@ -148,6 +137,17 @@ export function SessionCard({ session, readOnly = false }: SessionCardProps) {
           ))}
         </div>
       )}
+
+      {/* Yummy button - Bottom left corner */}
+      <div className="mt-auto pt-3">
+        <YummyButton
+          sessionId={session.id}
+          initialYummyCount={session.yummy_count}
+          initialHasYummied={session.has_yummied}
+          canYummy={session.can_yummy}
+          onShowList={() => setYummiesModalSessionId(session.id)}
+        />
+      </div>
     </>
   )
 
